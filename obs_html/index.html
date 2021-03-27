@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>clock</title>
+    </head>
+    <body>
+        <p class="time"></p>
+    </body>
+
+    <script charset="utf-8">
+        class timer {
+            constructor() {
+                this.hours = 0
+                this.minutes = 0
+                this.seconds = 10
+            }
+
+            updateClock() {
+                console.log("tik tak", `${this.hours}:${this.minutes}:${this.seconds}`)
+                document.querySelector(".time").innerText = `${this.hours}:${this.minutes}:${this.seconds}`
+            }
+
+            countDown() {
+                setTimeout(() => {
+                    console.log("second have passed")
+                    if (this.seconds > 0) {
+                        this.seconds -= 1
+                    } else {
+                        this.seconds = 59
+                        if (this.minutes > 0) {
+                            this.minutes -= 1
+                        } else {
+                            this.minutes = 59
+                            if (this.hours > 0) {
+                                this.hours -= 1
+                            } else {
+                                this.hours = 0
+                                return 1
+                            }
+                        }
+                    }
+                    this.updateClock()
+                    this.countDown()
+                }, 1000)
+            }
+        }
+        const clock = new timer()
+        console.log("sth works")
+        clock.updateClock()
+        clock.countDown()
+        if (window.WebSocket) console.log("websockets works")
+    </script>
+</html>

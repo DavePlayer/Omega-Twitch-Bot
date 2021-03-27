@@ -6,6 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = __importDefault(require("electron"));
 var url_1 = __importDefault(require("url"));
 var path_1 = __importDefault(require("path"));
+var express_1 = __importDefault(require("express"));
+var WebServer = express_1.default();
+WebServer.get('/', function (req, res) {
+    res.sendfile(path_1.default.resolve(__dirname + "/../obs_html/index.html"));
+});
 var app = electron_1.default.app, BrowserWindow = electron_1.default.BrowserWindow, ipcMain = electron_1.default.ipcMain;
 app.on('ready', function () {
     var window = new BrowserWindow({
@@ -23,3 +28,4 @@ app.on('ready', function () {
 ipcMain.on('timer:updateClock', function (e, clock) {
     console.log(clock);
 });
+WebServer.listen('3200', function () { return console.log('listening on port 3200'); });

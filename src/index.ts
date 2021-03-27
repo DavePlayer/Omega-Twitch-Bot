@@ -2,6 +2,13 @@
 import electron from 'electron'
 import url from 'url'
 import path from 'path'
+import express from 'express'
+
+const WebServer:express.Application = express()
+
+WebServer.get('/', (req:express.Request, res:express.Response) => {
+    res.sendfile(path.resolve(`${__dirname}/../obs_html/index.html`))
+})
 
 const {app, BrowserWindow, ipcMain} = electron
 
@@ -23,3 +30,6 @@ app.on('ready', () => {
 ipcMain.on('timer:updateClock', (e, clock) => {
     console.log(clock)
 })
+
+
+WebServer.listen('3200', () => console.log('listening on port 3200'))
