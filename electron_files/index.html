@@ -6,9 +6,11 @@
     <body>
         <h1>works!!!!!!!!!</h1>
         <form action="#" method="get" accept-charset="utf-8">
-            <input type="text" value="0" name="" id="hours" />
-            <input type="text" value="0" name="" id="minutes" />
-            <input type="text" value="0" name="" id="seconds" />
+            <input type="number" min="0" max="23" value="0" name="" id="hours" />
+            <input type="number" min="0" max="59" value="0" name="" id="minutes" />
+            <input type="number" min="0" max="59" value="0" name="" id="seconds" />
+            <button>update time</button>
         </form>
+        <script charset="utf-8" src="./main.js"></script>
     </body>
 </html>
