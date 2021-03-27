@@ -1,0 +1,23 @@
+{
+    "name": "omega_twitch_bot",
+    "version": "0.0.1",
+    "description": "OmegaLoveIssac Twitch chat bot for private usages",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"works\"",
+        "start": "tsc && node ./build/index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DavePlayer/Omega_twitch_bot.git"
+    },
+    "author": "Dave_Player",
+    "license": "GNU",
+    "bugs": {
+        "url": "https://github.com/DavePlayer/Omega_twitch_bot/issues"
+    },
+    "homepage": "https://github.com/DavePlayer/Omega_twitch_bot#readme",
+    "dependencies": {
+        "typescript": "*"
+    }
+}
