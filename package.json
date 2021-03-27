@@ -20,6 +20,7 @@
     "dependencies": {
         "@types/express": "*",
         "@types/tmi.js": "*",
+        "electron": "*",
         "express": "*",
         "tmi.js": "*",
         "typescript": "*"
