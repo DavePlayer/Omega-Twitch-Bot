@@ -7,9 +7,24 @@ var electron_1 = __importDefault(require("electron"));
 var url_1 = __importDefault(require("url"));
 var path_1 = __importDefault(require("path"));
 var express_1 = __importDefault(require("express"));
+var cors = require('cors');
 var WebServer = express_1.default();
+var http = require('http').createServer();
+WebServer.use(cors());
 WebServer.get('/', function (req, res) {
     res.sendfile(path_1.default.resolve(__dirname + "/../obs_html/index.html"));
+});
+var wws = require('socket.io')(http, {
+    cors: { origin: "*" }
+});
+WebServer.listen('3200', function () { return console.log('listening on port 3200'); });
+//const wws = new WebSocket.Server({server: require('http').createServer(WebServer)})
+wws.on('connection', function (socket) {
+    console.log('new client connected');
+    socket.send('connection confirmed');
+    socket.on('timer:update', function () {
+        console.log('updated clock');
+    });
 });
 var app = electron_1.default.app, BrowserWindow = electron_1.default.BrowserWindow, ipcMain = electron_1.default.ipcMain;
 app.on('ready', function () {
@@ -28,4 +43,4 @@ app.on('ready', function () {
 ipcMain.on('timer:updateClock', function (e, clock) {
     console.log(clock);
 });
-WebServer.listen('3200', function () { return console.log('listening on port 3200'); });
+http.listen(8080, function () { return console.log('http working on 8080'); });
