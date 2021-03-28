@@ -19,17 +19,14 @@
     "homepage": "https://github.com/DavePlayer/Omega_twitch_bot#readme",
     "dependencies": {
         "@types/express": "*",
-        "@types/express-ws": "*",
         "@types/socket.io": "*",
         "@types/tmi.js": "*",
-        "@types/ws": "*",
         "cors": "*",
+        "dotenv": "*",
         "electron": "*",
         "express": "*",
-        "express-ws": "*",
         "socket.io": "*",
         "tmi.js": "*",
-        "typescript": "*",
-        "ws": "*"
+        "typescript": "*"
     }
 }

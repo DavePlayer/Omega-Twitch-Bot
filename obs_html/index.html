@@ -25,12 +25,33 @@
                 let isCounting = true
                 console.log(this.hours, this.minutes, this.seconds)
                 if (this.hours == 0 && this.minutes == 0 && this.seconds == 0) isCounting = false
-                this.hours = clock.hours
-                this.minutes = clock.minutes
-                this.seconds = clock.seconds
+                this.hours = parseInt(clock.hours)
+                this.minutes = parseInt(clock.minutes)
+                this.seconds = parseInt(clock.seconds)
                 this.updateClock()
                 console.log(isCounting)
                 if (isCounting == false) this.countDown()
+            }
+
+            cheerHandler(cheer) {
+                if (
+                    cheer >= 100 &&
+                    cheer <= 600 &&
+                    (this.hours == 0 && this.minutes == 0 && this.seconds == 0) == false
+                ) {
+                    const delta = parseInt(cheer / 100)
+                    const minutesExtension = 10 * delta
+
+                    console.log(minutesExtension)
+
+                    if (this.minutes + minutesExtension < 60) {
+                        this.minutes += parseInt(minutesExtension)
+                    } else {
+                        const minutes = this.minutes + minutesExtension - 60
+                        this.minutes = parseInt(minutes)
+                        this.hours += 1
+                    }
+                }
             }
 
             updateFont(font) {
@@ -84,6 +105,10 @@
             socket.on("timer:font", (font) => {
                 clock.updateFont(font)
                 console.log("updating font XDDDDD", font)
+            })
+            socket.on("timer:cheer", (bits) => {
+                clock.cheerHandler(parseInt(bits))
+                console.log("got cheers", bits)
             })
         }
     </script>

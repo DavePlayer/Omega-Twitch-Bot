@@ -4,7 +4,10 @@ import url from 'url'
 import path from 'path'
 import express from 'express'
 import SocketIO from 'socket.io'
-const cors = require('cors')
+import cors from 'cors'
+import tmi from 'tmi.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const WebServer:express.Application = express()
 WebServer.use(cors())
@@ -27,6 +30,37 @@ wws.on('connection', (socket:SocketIO.Socket) => {
         console.log('updated clock')
     })
 })
+
+const clientTwitch:tmi.Client = new tmi.Client({
+ options: { debug: true },
+  connection: {
+    secure: true,
+    reconnect: true
+  },
+  identity: {
+    username: process.env.USERNAME,
+    password: process.env.TWITCH_KEY
+  },
+  channels: [process.env.USERNAME as string]   
+})
+
+clientTwitch.connect()
+
+
+// testing by chat because can't test cheers
+/*clientTwitch.on("message", (channel:any, userstate:any, message:any, self:any) => {
+    const bits = parseInt(message)
+
+    if(isNaN(bits) != true) {
+        wws.emit('timer:cheer', bits)
+    }
+})*/
+
+clientTwitch.on("cheer", (channel:any, userstate:tmi.Userstate, message:any) => {
+    // Do your stuff.
+    console.log(userstate.bits)
+    wws.emit('timer:cheer', userstate.bits)
+});
 
 const {app, BrowserWindow, ipcMain} = electron
 
