@@ -48,13 +48,13 @@ clientTwitch.connect()
 
 
 // testing by chat because can't test cheers
-/*clientTwitch.on("message", (channel:any, userstate:any, message:any, self:any) => {
+clientTwitch.on("message", (channel:any, userstate:any, message:any, self:any) => {
     const bits = parseInt(message)
 
     if(isNaN(bits) != true) {
         wws.emit('timer:cheer', bits)
     }
-})*/
+})
 
 clientTwitch.on("cheer", (channel:any, userstate:tmi.Userstate, message:any) => {
     // Do your stuff.

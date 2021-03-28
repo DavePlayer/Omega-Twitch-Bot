@@ -41,6 +41,7 @@ var clientTwitch = new tmi_js_1.default.Client({
     channels: [process.env.USERNAME]
 });
 clientTwitch.connect();
+// testing by chat because can't test cheers
 clientTwitch.on("message", function (channel, userstate, message, self) {
     var bits = parseInt(message);
     if (isNaN(bits) != true) {
