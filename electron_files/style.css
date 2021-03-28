@@ -16,6 +16,7 @@ header {
     height: 2em;
     display: flex;
     justify-content: center;
+    -webkit-app-region: drag;
 }
 
 header .settings {
@@ -93,6 +94,7 @@ input[type="number"] {
 svg {
     fill: white;
     cursor: pointer;
+    -webkit-app-region: no-drag;
 }
 
 svg:hover {

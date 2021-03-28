@@ -58,6 +58,7 @@ app.on('ready', function () {
     var window = new BrowserWindow({
         width: 500,
         height: 300,
+        frame: false,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -76,6 +77,9 @@ ipcMain.on('timer:updateClock', function (e, clock) {
 ipcMain.on('timer:updateFont', function (e, font) {
     console.log(font);
     wws.emit('timer:font', font);
+});
+ipcMain.on('app:close', function () {
+    app.quit();
 });
 WebServer.listen('3200', function () { return console.log('listening on port 3200'); });
 http.listen(8080, function () { return console.log('http working on 8080'); });

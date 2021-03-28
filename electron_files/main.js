@@ -23,3 +23,8 @@ document.querySelector("#fontForm").addEventListener("submit", (e) => {
         alert("debilu wpisz coś")
     }
 })
+
+document.querySelector("#close").addEventListener("click", (e) => {
+    e.preventDefault()
+    ipcRenderer.send("app:close")
+})

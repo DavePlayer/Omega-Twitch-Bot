@@ -48,13 +48,13 @@ clientTwitch.connect()
 
 
 // testing by chat because can't test cheers
-clientTwitch.on("message", (channel:any, userstate:any, message:any, self:any) => {
+/*clientTwitch.on("message", (channel:any, userstate:any, message:any, self:any) => {
     const bits = parseInt(message)
 
     if(isNaN(bits) != true) {
         wws.emit('timer:cheer', bits)
     }
-})
+})*/
 
 clientTwitch.on("cheer", (channel:any, userstate:tmi.Userstate, message:any) => {
     // Do your stuff.
@@ -68,6 +68,7 @@ app.on('ready', () => {
     const window:electron.BrowserWindow = new BrowserWindow({
             width: 500,
             height: 300,
+            frame: false,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
@@ -88,6 +89,9 @@ ipcMain.on('timer:updateClock', (e, clock) => {
 ipcMain.on('timer:updateFont', (e, font) => {
     console.log(font)
     wws.emit('timer:font', font)
+})
+ipcMain.on('app:close', () => {
+    app.quit()
 })
 
 WebServer.listen('3200', () => console.log('listening on port 3200'))
