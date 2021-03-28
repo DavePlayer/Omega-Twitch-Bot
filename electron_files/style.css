@@ -1,0 +1,100 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background-color: #18181b;
+    color: white;
+}
+
+header {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.05);
+    height: 2em;
+    display: flex;
+    justify-content: center;
+}
+
+header .settings {
+    padding: 0.1em;
+    flex-basis: 10%;
+}
+
+header .name {
+    color: #750da8;
+    font-size: 1.5em;
+    text-align: center;
+    flex-basis: 80%;
+}
+
+header .exit {
+    padding: 0.1em;
+    text-align: right;
+    flex-basis: 20%;
+}
+header .exit span {
+    width: 1em;
+    margin-right: 0.5em;
+}
+
+main {
+    margin-top: 2em;
+}
+
+main section {
+    width: 100%;
+}
+
+main input {
+    border: 2px solid rgba(1, 1, 1, 0);
+    border-radius: 0.2em;
+    padding: 0.4em;
+    text-align: center;
+    background-color: #3a3a3d;
+    color: #e0e0e2;
+}
+
+main input:focus {
+    border: 2px solid #9147ff;
+    background-color: black;
+    color: white;
+    outline: none;
+}
+
+main button {
+    border-radius: 0.2em;
+    border: none;
+    background-color: #9147ff;
+    color: #fbf8ff;
+    padding: 0.5em;
+    font-weight: 600;
+    margin-top: 1em;
+}
+
+main form {
+    margin-bottom: 2em;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+svg {
+    fill: white;
+    cursor: pointer;
+}
+
+svg:hover {
+    fill: #9147ff;
+}

@@ -56,6 +56,8 @@ clientTwitch.on("cheer", function (channel, userstate, message) {
 var app = electron_1.default.app, BrowserWindow = electron_1.default.BrowserWindow, ipcMain = electron_1.default.ipcMain;
 app.on('ready', function () {
     var window = new BrowserWindow({
+        width: 500,
+        height: 300,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
