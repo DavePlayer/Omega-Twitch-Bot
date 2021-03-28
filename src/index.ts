@@ -47,6 +47,11 @@ app.on('ready', () => {
 
 ipcMain.on('timer:updateClock', (e, clock) => {
     console.log(clock)
+    wws.emit('timer:update', clock)
+})
+ipcMain.on('timer:updateFont', (e, font) => {
+    console.log(font)
+    wws.emit('timer:font', font)
 })
 
 WebServer.listen('3200', () => console.log('listening on port 3200'))

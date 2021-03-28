@@ -1,7 +1,7 @@
 const electron = require("electron")
 const { ipcRenderer } = electron
 
-document.querySelector("form").addEventListener("submit", (e) => {
+document.querySelector("#clockForm").addEventListener("submit", (e) => {
     e.preventDefault()
     console.log(document.querySelector("#hours").value)
     const clock = {
@@ -11,4 +11,15 @@ document.querySelector("form").addEventListener("submit", (e) => {
     }
     ipcRenderer.send("timer:updateClock", clock)
     console.log("sednend data")
+})
+
+document.querySelector("#fontForm").addEventListener("submit", (e) => {
+    e.preventDefault()
+    const size = document.querySelector("#font").value
+    if (size.length > 0) {
+        ipcRenderer.send("timer:updateFont", size)
+        console.log("updated font")
+    } else {
+        alert("debilu wpisz coś")
+    }
 })

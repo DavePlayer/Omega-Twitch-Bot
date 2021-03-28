@@ -9,15 +9,14 @@ var path_1 = __importDefault(require("path"));
 var express_1 = __importDefault(require("express"));
 var cors = require('cors');
 var WebServer = express_1.default();
-var http = require('http').createServer();
 WebServer.use(cors());
 WebServer.get('/', function (req, res) {
     res.sendfile(path_1.default.resolve(__dirname + "/../obs_html/index.html"));
 });
+var http = require('http').createServer();
 var wws = require('socket.io')(http, {
     cors: { origin: "*" }
 });
-WebServer.listen('3200', function () { return console.log('listening on port 3200'); });
 //const wws = new WebSocket.Server({server: require('http').createServer(WebServer)})
 wws.on('connection', function (socket) {
     console.log('new client connected');
@@ -42,5 +41,11 @@ app.on('ready', function () {
 });
 ipcMain.on('timer:updateClock', function (e, clock) {
     console.log(clock);
+    wws.emit('timer:update', clock);
 });
+ipcMain.on('timer:updateFont', function (e, font) {
+    console.log(font);
+    wws.emit('timer:font', font);
+});
+WebServer.listen('3200', function () { return console.log('listening on port 3200'); });
 http.listen(8080, function () { return console.log('http working on 8080'); });

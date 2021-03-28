@@ -19,7 +19,22 @@
                 this.hours = 0
                 this.minutes = 0
                 this.seconds = 10
-                this.wsConnection = null
+            }
+
+            clockOverwrite(clock) {
+                let isCounting = true
+                console.log(this.hours, this.minutes, this.seconds)
+                if (this.hours == 0 && this.minutes == 0 && this.seconds == 0) isCounting = false
+                this.hours = clock.hours
+                this.minutes = clock.minutes
+                this.seconds = clock.seconds
+                this.updateClock()
+                console.log(isCounting)
+                if (isCounting == false) this.countDown()
+            }
+
+            updateFont(font) {
+                document.querySelector(".time").style.fontSize = `${font}px`
             }
 
             updateClock() {
@@ -42,6 +57,8 @@
                                 this.hours -= 1
                             } else {
                                 this.hours = 0
+                                this.minutes = 0
+                                this.seconds = 0
                                 return 1
                             }
                         }
@@ -59,6 +76,14 @@
             const socket = io("ws://127.0.0.1:8080")
             socket.on("message", (text) => {
                 console.log(text)
+            })
+            socket.on("timer:update", (time) => {
+                clock.clockOverwrite(time)
+                console.log("updating clock XDDDDD", time)
+            })
+            socket.on("timer:font", (font) => {
+                clock.updateFont(font)
+                console.log("updating font XDDDDD", font)
             })
         }
     </script>
