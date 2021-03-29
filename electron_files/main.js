@@ -1,5 +1,5 @@
 const electron = require("electron")
-const { ipcRenderer } = electron
+const { ipcRenderer, shell } = electron
 
 document.querySelector("#clockForm").addEventListener("submit", (e) => {
     e.preventDefault()
@@ -27,4 +27,38 @@ document.querySelector("#fontForm").addEventListener("submit", (e) => {
 document.querySelector("#close").addEventListener("click", (e) => {
     e.preventDefault()
     ipcRenderer.send("app:close")
+})
+
+function showConf() {
+    document.querySelector("#configForm").innerHTML = `
+                <section class="configSection">
+                    <input type="text" value="" placeholder="user token" id="token" />
+                    <input type="text" value="" placeholder="username" id="username" />
+                </section>
+                <p>Click <a onClick="openLink()">here</a> to get token</p>
+                <button>append config</button>
+    `
+}
+
+function openLink() {
+    shell.openExternal("https://twitchapps.com/tmi/")
+}
+
+document.querySelector("#showConfig").addEventListener("click", (e) => {
+    e.preventDefault()
+    showConf()
+})
+
+document.querySelector("#configForm").addEventListener("submit", (e) => {
+    e.preventDefault()
+    const token = document.querySelector("#token").value
+    const username = document.querySelector("#username").value
+    if (token.length > 0 && username.length > 0) {
+        ipcRenderer.send("app:updateConfig", token, username)
+        document.querySelector("#configForm").innerHTML = `
+                <button onClick="showConf()" id="showConfig">Show Config</button>
+    `
+    } else {
+        alert("wpisz coś debilu")
+    }
 })

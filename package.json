@@ -5,7 +5,12 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"works\"",
-        "start": "tsc && electron ./build/"
+        "start": "tsc && electron ./index.js",
+        "build": "webpack",
+        "deploy": "cp electron_files/* build/ && cp obs_html/* build/ && cp -r node_modules build/",
+        "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=electron_files/Logo_Omega.png --prune=true --out=release-builds",
+        "package-win": "electron-packager . Omega_Timer_Bot --overwrite --asar --platform=win32 --arch=ia32 --icon=electron_files/Logo_Omega.png --prune=true --out=release-builds --version-string.CompanyName=OmegaLoveIssac --version-string.FileDescription=CE --version-string.ProductName=\"Omega Timer Bot\"",
+        "package-linux": "electron-packager . Omega_Timer_Bot --overwrite --asar --platform=linux --arch=x64 --icon=electron_files/Logo_Omega.png --prune=true --out=release-builds"
     },
     "repository": {
         "type": "git",
@@ -28,5 +33,8 @@
         "socket.io": "*",
         "tmi.js": "*",
         "typescript": "*"
+    },
+    "devDependencies": {
+        "electron-packager": "*"
     }
 }

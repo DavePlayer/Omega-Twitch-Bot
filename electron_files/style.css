@@ -5,6 +5,15 @@
     margin: 0;
 }
 
+a {
+    color: #9147ff;
+    cursor: pointer;
+}
+
+p {
+    margin-top: 0.5em;
+}
+
 body {
     background-color: #18181b;
     color: white;

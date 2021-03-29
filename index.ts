@@ -13,7 +13,7 @@ const WebServer:express.Application = express()
 WebServer.use(cors())
 
 WebServer.get('/', (req:express.Request, res:express.Response) => {
-    res.sendfile(path.resolve(`${__dirname}/../obs_html/index.html`))
+    res.sendfile(path.resolve(`${__dirname}/obs_html/index.html`))
 })
 
 const http = require('http').createServer()
@@ -31,7 +31,7 @@ wws.on('connection', (socket:SocketIO.Socket) => {
     })
 })
 
-const clientTwitch:tmi.Client = new tmi.Client({
+let clientTwitch:tmi.Client = new tmi.Client({
  options: { debug: true },
   connection: {
     secure: true,
@@ -55,6 +55,10 @@ clientTwitch.connect()
         wws.emit('timer:cheer', bits)
     }
 })*/
+clientTwitch.on("connected", () => {
+    console.log('connected properly')
+        clientTwitch.say(process.env.USERNAME as string, 'pomyślnie połączono z czatem')
+});
 
 clientTwitch.on("cheer", (channel:any, userstate:tmi.Userstate, message:any) => {
     // Do your stuff.
@@ -64,10 +68,12 @@ clientTwitch.on("cheer", (channel:any, userstate:tmi.Userstate, message:any) => 
 
 const {app, BrowserWindow, ipcMain} = electron
 
+// process.env.NODE_ENV = 'production'
+
 app.on('ready', () => {
     const window:electron.BrowserWindow = new BrowserWindow({
-            width: 500,
-            height: 300,
+            width: 600,
+            height: 450,
             frame: false,
             webPreferences: {
                 nodeIntegration: true,
@@ -76,7 +82,7 @@ app.on('ready', () => {
     })
 
     window.loadURL(url.format({
-        pathname: path.join(__dirname, '../electron_files/index.html'),
+        pathname: path.join(__dirname, '/electron_files/index.html'),
         protocol: 'file',
         slashes: true
     }))
@@ -92,6 +98,26 @@ ipcMain.on('timer:updateFont', (e, font) => {
 })
 ipcMain.on('app:close', () => {
     app.quit()
+})
+ipcMain.on('app:updateConfig', (e, token, username) => {
+    process.env.TWITCH_KEY = token
+    process.env.USERNAME = username
+    console.log(token, username)
+    clientTwitch = new tmi.Client({
+     options: { debug: true },
+      connection: {
+        secure: true,
+        reconnect: true
+      },
+      identity: {
+        username: process.env.USERNAME,
+        password: process.env.TWITCH_KEY
+      },
+      channels: [process.env.USERNAME as string]   
+    })
+    clientTwitch.connect().then( () => {
+        clientTwitch.say(process.env.USERNAME as string, 'pomyślnie połączono z czatem')
+    } )
 })
 
 WebServer.listen('3200', () => console.log('listening on port 3200'))

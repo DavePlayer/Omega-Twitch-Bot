@@ -14,7 +14,7 @@ dotenv_1.default.config();
 var WebServer = express_1.default();
 WebServer.use(cors_1.default());
 WebServer.get('/', function (req, res) {
-    res.sendfile(path_1.default.resolve(__dirname + "/../obs_html/index.html"));
+    res.sendfile(path_1.default.resolve(__dirname + "/obs_html/index.html"));
 });
 var http = require('http').createServer();
 var wws = require('socket.io')(http, {
@@ -42,11 +42,16 @@ var clientTwitch = new tmi_js_1.default.Client({
 });
 clientTwitch.connect();
 // testing by chat because can't test cheers
-clientTwitch.on("message", function (channel, userstate, message, self) {
-    var bits = parseInt(message);
-    if (isNaN(bits) != true) {
-        wws.emit('timer:cheer', bits);
+/*clientTwitch.on("message", (channel:any, userstate:any, message:any, self:any) => {
+    const bits = parseInt(message)
+
+    if(isNaN(bits) != true) {
+        wws.emit('timer:cheer', bits)
     }
+})*/
+clientTwitch.on("connected", function () {
+    console.log('connected properly');
+    clientTwitch.say(process.env.USERNAME, 'pomyślnie połączono z czatem');
 });
 clientTwitch.on("cheer", function (channel, userstate, message) {
     // Do your stuff.
@@ -54,10 +59,11 @@ clientTwitch.on("cheer", function (channel, userstate, message) {
     wws.emit('timer:cheer', userstate.bits);
 });
 var app = electron_1.default.app, BrowserWindow = electron_1.default.BrowserWindow, ipcMain = electron_1.default.ipcMain;
+// process.env.NODE_ENV = 'production'
 app.on('ready', function () {
     var window = new BrowserWindow({
-        width: 500,
-        height: 300,
+        width: 600,
+        height: 450,
         frame: false,
         webPreferences: {
             nodeIntegration: true,
@@ -65,7 +71,7 @@ app.on('ready', function () {
         }
     });
     window.loadURL(url_1.default.format({
-        pathname: path_1.default.join(__dirname, '../electron_files/index.html'),
+        pathname: path_1.default.join(__dirname, '/electron_files/index.html'),
         protocol: 'file',
         slashes: true
     }));
@@ -80,6 +86,26 @@ ipcMain.on('timer:updateFont', function (e, font) {
 });
 ipcMain.on('app:close', function () {
     app.quit();
+});
+ipcMain.on('app:updateConfig', function (e, token, username) {
+    process.env.TWITCH_KEY = token;
+    process.env.USERNAME = username;
+    console.log(token, username);
+    clientTwitch = new tmi_js_1.default.Client({
+        options: { debug: true },
+        connection: {
+            secure: true,
+            reconnect: true
+        },
+        identity: {
+            username: process.env.USERNAME,
+            password: process.env.TWITCH_KEY
+        },
+        channels: [process.env.USERNAME]
+    });
+    clientTwitch.connect().then(function () {
+        clientTwitch.say(process.env.USERNAME, 'pomyślnie połączono z czatem');
+    });
 });
 WebServer.listen('3200', function () { return console.log('listening on port 3200'); });
 http.listen(8080, function () { return console.log('http working on 8080'); });
