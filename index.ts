@@ -29,13 +29,17 @@ wws.on('connection', (socket:SocketIO.Socket) => {
     socket.on('timer:update', () => {
         console.log('updated clock')
     })
+    socket.on('timer:cheer', (cheer) => {
+        console.log('cheer granted', cheer)
+    })
 })
 
 let clientTwitch:tmi.Client = new tmi.Client({
  options: { debug: true },
   connection: {
     secure: true,
-    reconnect: true
+    reconnect: true,
+    //server: 'irc.fdgt.dev',
   },
   identity: {
     username: process.env.USERNAME,
@@ -45,6 +49,10 @@ let clientTwitch:tmi.Client = new tmi.Client({
 })
 
 clientTwitch.connect()
+    .then( () => {
+        console.log('connected')
+    })
+    .catch( err => console.log(err))
 
 
 // testing by chat because can't test cheers
@@ -62,7 +70,7 @@ clientTwitch.on("connected", () => {
 
 clientTwitch.on("cheer", (channel:any, userstate:tmi.Userstate, message:any) => {
     // Do your stuff.
-    console.log(userstate.bits)
+    console.log(userstate.bits, '-----------')
     wws.emit('timer:cheer', userstate.bits)
 });
 

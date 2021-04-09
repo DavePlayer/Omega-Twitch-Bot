@@ -27,12 +27,16 @@ wws.on('connection', function (socket) {
     socket.on('timer:update', function () {
         console.log('updated clock');
     });
+    socket.on('timer:cheer', function (cheer) {
+        console.log('cheer granted', cheer);
+    });
 });
 var clientTwitch = new tmi_js_1.default.Client({
     options: { debug: true },
     connection: {
         secure: true,
-        reconnect: true
+        reconnect: true,
+        server: 'irc.fdgt.dev',
     },
     identity: {
         username: process.env.USERNAME,
@@ -40,7 +44,15 @@ var clientTwitch = new tmi_js_1.default.Client({
     },
     channels: [process.env.USERNAME]
 });
-clientTwitch.connect();
+clientTwitch.connect()
+    .then(function () {
+    console.log('connected');
+    setTimeout(function () {
+        clientTwitch.say(process.env.USERNAME, 'bits --bitscount 800 Yay --username xd')
+            .catch(function (err) { return console.log(err); });
+    }, 10000);
+})
+    .catch(function (err) { return console.log(err); });
 // testing by chat because can't test cheers
 /*clientTwitch.on("message", (channel:any, userstate:any, message:any, self:any) => {
     const bits = parseInt(message)
@@ -55,7 +67,7 @@ clientTwitch.on("connected", function () {
 });
 clientTwitch.on("cheer", function (channel, userstate, message) {
     // Do your stuff.
-    console.log(userstate.bits);
+    console.log(userstate.bits, '-----------');
     wws.emit('timer:cheer', userstate.bits);
 });
 var app = electron_1.default.app, BrowserWindow = electron_1.default.BrowserWindow, ipcMain = electron_1.default.ipcMain;

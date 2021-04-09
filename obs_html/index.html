@@ -34,11 +34,12 @@
             }
 
             cheerHandler(cheer) {
+                console.log("cheering for cheerlidering", cheer)
                 if (cheer >= 100 && (this.hours == 0 && this.minutes == 0 && this.seconds == 0) == false) {
                     const delta = cheer <= 600 ? parseInt(cheer / 100) : 6
                     const minutesExtension = 10 * delta
 
-                    console.log(minutesExtension)
+                    console.log(minutesExtension, cheer)
 
                     if (this.minutes + minutesExtension < 60) {
                         this.minutes += parseInt(minutesExtension)
@@ -47,6 +48,7 @@
                         this.minutes = parseInt(minutes)
                         this.hours += 1
                     }
+                    this.updateClock()
                 }
             }
 
@@ -110,8 +112,8 @@
                 console.log("updating font XDDDDD", font)
             })
             socket.on("timer:cheer", (bits) => {
-                clock.cheerHandler(parseInt(bits))
                 console.log("got cheers", bits)
+                clock.cheerHandler(parseInt(bits))
             })
         }
     </script>
