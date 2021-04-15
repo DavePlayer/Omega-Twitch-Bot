@@ -58,7 +58,8 @@ main section {
     width: 100%;
 }
 
-main input {
+main input,
+main textarea {
     border: 2px solid rgba(1, 1, 1, 0);
     border-radius: 0.2em;
     padding: 0.4em;
@@ -67,7 +68,29 @@ main input {
     color: #e0e0e2;
 }
 
-main input:focus {
+textarea {
+    text-align: left !important;
+    resize: none;
+    width: 40em;
+    height: 10em;
+}
+
+textarea::-webkit-scrollbar {
+    width: 0.5em;
+}
+
+textarea::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+textarea::-webkit-scrollbar-thumb {
+    border-radius: 0.2em;
+    background-color: #3a3a3d;
+    outline: white;
+}
+
+main input:focus,
+main textarea:focus {
     border: 2px solid #9147ff;
     background-color: black;
     color: white;

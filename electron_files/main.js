@@ -62,3 +62,7 @@ document.querySelector("#configForm").addEventListener("submit", (e) => {
         alert("wpisz coś debilu")
     }
 })
+
+ipcRenderer.on("timer:console", (e, message) => {
+    document.querySelector("#console").innerHTML += `\n${message}`
+})

@@ -29,6 +29,9 @@ wws.on('connection', (socket:SocketIO.Socket) => {
     socket.on('timer:update', () => {
         console.log('updated clock')
     })
+    socket.on('timer:console', (message) => {
+        console.log(message)
+    })
     socket.on('timer:cheer', (cheer) => {
         console.log('cheer granted', cheer)
     })
@@ -51,11 +54,15 @@ let clientTwitch:tmi.Client = new tmi.Client({
 clientTwitch.connect()
     .then( () => {
         console.log('connected')
+        window.webContents.send('timer:console', `::--- pomyślnie połączono z czatem`)
         //setTimeout(() => {
         //    clientTwitch.say(process.env.USERNAME as string, 'bits --bitscount 500 Woohoo!')
         //}, 10000)
     })
-    .catch( err => console.log(err))
+    .catch( err => {
+        console.log(err)
+        window.webContents.send('timer:console', `::---${err}`)
+    })
 
 
 // testing by chat because can't test cheers
@@ -69,21 +76,25 @@ clientTwitch.connect()
 clientTwitch.on("connected", () => {
     console.log('connected properly')
         clientTwitch.say(process.env.USERNAME as string, 'pomyślnie połączono z czatem')
+    //window.webContents.send('timer:console', `::--- pomyślnie połączono z czatem`)
 });
 
 clientTwitch.on("cheer", (channel:any, userstate:tmi.Userstate, message:any) => {
     // Do your stuff.
     console.log(userstate.bits, '-----------')
-        clientTwitch.say(process.env.USERNAME as string, `Ktoś dał donate ${userstate.bits}, więc daj znać dave, że twitch dobrze podaje cheersy`)
+        //clientTwitch.say(process.env.USERNAME as string, `Ktoś dał donate ${userstate.bits}, więc daj znać dave, że twitch dobrze podaje cheersy`)
     wws.emit('timer:cheer', userstate.bits)
+    window.webContents.send('timer:console', `::--- someone cheered ${userstate.bits} bits`)
 });
 
 const {app, BrowserWindow, ipcMain} = electron
 
 // process.env.NODE_ENV = 'production'
 
+let window:electron.BrowserWindow
+
 app.on('ready', () => {
-    const window:electron.BrowserWindow = new BrowserWindow({
+    window = new BrowserWindow({
             width: 600,
             height: 450,
             frame: false,
@@ -92,7 +103,6 @@ app.on('ready', () => {
                 contextIsolation: false,
         }
     })
-
     window.loadURL(url.format({
         pathname: path.join(__dirname, '/electron_files/index.html'),
         protocol: 'file',
@@ -103,10 +113,12 @@ app.on('ready', () => {
 ipcMain.on('timer:updateClock', (e, clock) => {
     console.log(clock)
     wws.emit('timer:update', clock)
+    window.webContents.send('timer:console', `::--- Timer updated`)
 })
 ipcMain.on('timer:updateFont', (e, font) => {
     console.log(font)
     wws.emit('timer:font', font)
+    window.webContents.send('timer:console', `::--- Font Changed`)
 })
 ipcMain.on('app:close', () => {
     app.quit()
@@ -129,7 +141,12 @@ ipcMain.on('app:updateConfig', (e, token, username) => {
     })
     clientTwitch.connect().then( () => {
         clientTwitch.say(process.env.USERNAME as string, 'pomyślnie połączono z czatem')
-    } )
+    window.webContents.send('timer:console', `::--- pomyślnie połączono z czatem`)
+    })
+    .catch(err => {
+        console.log(err)
+        window.webContents.send('timer:console', `::--- ${err}`)
+    })
 })
 
 WebServer.listen('3200', () => console.log('listening on port 3200'))
