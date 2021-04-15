@@ -36,7 +36,7 @@ var clientTwitch = new tmi_js_1.default.Client({
     connection: {
         secure: true,
         reconnect: true,
-        server: 'irc.fdgt.dev',
+        //server: 'irc.fdgt.dev',
     },
     identity: {
         username: process.env.USERNAME,
@@ -47,10 +47,9 @@ var clientTwitch = new tmi_js_1.default.Client({
 clientTwitch.connect()
     .then(function () {
     console.log('connected');
-    setTimeout(function () {
-        clientTwitch.say(process.env.USERNAME, 'bits --bitscount 800 Yay --username xd')
-            .catch(function (err) { return console.log(err); });
-    }, 10000);
+    //setTimeout(() => {
+    //    clientTwitch.say(process.env.USERNAME as string, 'bits --bitscount 500 Woohoo!')
+    //}, 10000)
 })
     .catch(function (err) { return console.log(err); });
 // testing by chat because can't test cheers
@@ -68,6 +67,7 @@ clientTwitch.on("connected", function () {
 clientTwitch.on("cheer", function (channel, userstate, message) {
     // Do your stuff.
     console.log(userstate.bits, '-----------');
+    clientTwitch.say(process.env.USERNAME, "Kto\u015B da\u0142 donate " + userstate.bits + ", wi\u0119c daj zna\u0107 dave, \u017Ce twitch dobrze podaje cheersy");
     wws.emit('timer:cheer', userstate.bits);
 });
 var app = electron_1.default.app, BrowserWindow = electron_1.default.BrowserWindow, ipcMain = electron_1.default.ipcMain;

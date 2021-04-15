@@ -51,6 +51,9 @@ let clientTwitch:tmi.Client = new tmi.Client({
 clientTwitch.connect()
     .then( () => {
         console.log('connected')
+        //setTimeout(() => {
+        //    clientTwitch.say(process.env.USERNAME as string, 'bits --bitscount 500 Woohoo!')
+        //}, 10000)
     })
     .catch( err => console.log(err))
 
@@ -71,6 +74,7 @@ clientTwitch.on("connected", () => {
 clientTwitch.on("cheer", (channel:any, userstate:tmi.Userstate, message:any) => {
     // Do your stuff.
     console.log(userstate.bits, '-----------')
+        clientTwitch.say(process.env.USERNAME as string, `Ktoś dał donate ${userstate.bits}, więc daj znać dave, że twitch dobrze podaje cheersy`)
     wws.emit('timer:cheer', userstate.bits)
 });
 
