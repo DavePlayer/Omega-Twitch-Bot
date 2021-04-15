@@ -96,7 +96,7 @@ let window:electron.BrowserWindow
 app.on('ready', () => {
     window = new BrowserWindow({
             width: 600,
-            height: 450,
+            height: 550,
             frame: false,
             webPreferences: {
                 nodeIntegration: true,

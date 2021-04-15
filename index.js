@@ -85,7 +85,7 @@ var window;
 app.on('ready', function () {
     window = new BrowserWindow({
         width: 600,
-        height: 450,
+        height: 550,
         frame: false,
         webPreferences: {
             nodeIntegration: true,
