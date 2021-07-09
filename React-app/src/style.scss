@@ -1,0 +1,170 @@
+
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    color: #9147ff;
+    cursor: pointer;
+}
+
+p {
+    margin-top: 0.5em;
+}
+
+body {
+    background-color: #18181b;
+    color: white;
+}
+
+header {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.05);
+    height: 2em;
+    display: flex;
+    justify-content: center;
+    -webkit-app-region: drag;
+}
+
+header .settings {
+    padding: 0.1em;
+    flex-basis: 10%;
+}
+
+header .name {
+    color: #750da8;
+    font-size: 1.5em;
+    text-align: center;
+    flex-basis: 80%;
+}
+
+header .exit {
+    padding: 0.1em;
+    text-align: right;
+    flex-basis: 20%;
+}
+header .exit span {
+    width: 1em;
+    margin-right: 0.5em;
+}
+
+nav {
+    width: 100%;
+}
+
+nav ol {
+    width: 100%;
+    padding: 1em;
+    display: flex;
+}
+
+nav ol li {
+    list-style-type: none;
+    margin-left: 1em;
+    color : white;
+    font-family: inherit;
+}
+
+nav ol a {
+    text-decoration: none;
+}
+
+nav ol a:hover li {
+    color: #a970ff;
+}
+
+main {
+    margin-top: 2em;
+    padding: 1em;
+}
+
+main section {
+    width: 100%;
+}
+
+main input,
+main textarea {
+    border: 2px solid rgba(1, 1, 1, 0);
+    border-radius: 0.2em;
+    padding: 0.4em;
+    text-align: center;
+    background-color: #3a3a3d;
+    color: #e0e0e2;
+}
+
+textarea {
+    text-align: left !important;
+    resize: none;
+    width: 40em;
+    height: 10em;
+}
+
+textarea::-webkit-scrollbar {
+    width: 0.5em;
+}
+
+textarea::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+textarea::-webkit-scrollbar-thumb {
+    border-radius: 0.2em;
+    background-color: #3a3a3d;
+    outline: white;
+}
+
+main input:focus,
+main textarea:focus {
+    border: 2px solid #9147ff;
+    background-color: black;
+    color: white;
+    outline: none;
+}
+
+main button {
+    border-radius: 0.2em;
+    border: none;
+    background-color: #9147ff;
+    color: #fbf8ff;
+    padding: 0.5em;
+    font-weight: 600;
+    margin-top: 1em;
+}
+
+main form {
+    margin-bottom: 2em;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+svg {
+    fill: white;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+}
+
+svg:hover {
+    fill: #9147ff;
+}
+
+.file-config {
+    margin-top: 1em;
+    display: none;
+}
+
+input[type='file'] {
+
+}

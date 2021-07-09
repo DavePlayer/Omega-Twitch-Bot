@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "jsx": "react", // support for JSX .tsx files
+    "jsx": "react-jsx", // support for JSX .tsx files
     "module": "commonjs", //general module code
     "noImplicitAny": true, //rise errors when type is implied as any
     "outDir": "./out/", // output directory
     "sourceMap": true, // generates .amp file used for debbuging
     "target": "es5", // ECMAScript version which compilator is going to convert our code to
-    "esModuleInterop": true // Necessary when using ES6 imports
+    "esModuleInterop": true, // Necessary when using ES6 import
   },
   "include": [ // specifying main script
     "./"
