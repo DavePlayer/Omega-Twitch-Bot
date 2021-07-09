@@ -8,6 +8,7 @@ import cors from 'cors'
 import tmi from 'tmi.js'
 import dotenv from 'dotenv'
 dotenv.config()
+require('electron-reload')(__dirname);
 
 const WebServer:express.Application = express()
 WebServer.use(cors())
@@ -101,6 +102,7 @@ app.on('ready', () => {
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
+                //devTools: true
         }
     })
     window.loadURL(url.format({

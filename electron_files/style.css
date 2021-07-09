@@ -50,6 +50,31 @@ header .exit span {
     margin-right: 0.5em;
 }
 
+nav {
+    width: 100%;
+}
+
+nav ol {
+    width: 100%;
+    padding: 1em;
+    display: flex;
+}
+
+nav ol li {
+    list-style-type: none;
+    margin-left: 1em;
+    color : white;
+    font-family: inherit;
+}
+
+nav ol a {
+    text-decoration: none;
+}
+
+nav ol a:hover li {
+    color: #a970ff;
+}
+
 main {
     margin-top: 2em;
     padding: 1em;
@@ -132,4 +157,13 @@ svg {
 
 svg:hover {
     fill: #9147ff;
+}
+
+.file-config {
+    margin-top: 1em;
+    display: none;
+}
+
+input[type='file'] {
+
 }

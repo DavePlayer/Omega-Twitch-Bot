@@ -36,6 +36,7 @@
         "typescript": "*"
     },
     "devDependencies": {
-        "electron-packager": "*"
+        "electron-packager": "*",
+        "electron-reload": "^1.5.0"
     }
 }

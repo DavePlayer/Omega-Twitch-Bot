@@ -11,6 +11,7 @@ var cors_1 = __importDefault(require("cors"));
 var tmi_js_1 = __importDefault(require("tmi.js"));
 var dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
+require('electron-reload')(__dirname);
 var WebServer = express_1.default();
 WebServer.use(cors_1.default());
 WebServer.get('/', function (req, res) {
@@ -90,6 +91,7 @@ app.on('ready', function () {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
+            //devTools: true
         }
     });
     window.loadURL(url_1.default.format({
