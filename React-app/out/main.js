@@ -22,10 +22,16 @@ WebServer.get("/", function (req, res) {
 });
 WebServer.get("/sounds", function (req, res) {
     console.log("some send request for sounds json");
-    var file = fs_1.default.readFileSync(appPath() + "/sounds.json", "utf-8");
-    var json = JSON.parse(file);
-    console.log(json);
-    res.json(json);
+    console.log(fs_1.default.existsSync(appPath() + "/sounds.json"));
+    if (fs_1.default.existsSync(appPath() + "/sounds.json")) {
+        var file = fs_1.default.readFileSync(appPath() + "/sounds.json", "utf-8");
+        var json = JSON.parse(file);
+        console.log(json);
+        res.json(json);
+    }
+    else {
+        res.status(404).json({ error: "no sounds found" });
+    }
 });
 var http = require("http").createServer();
 var wws = require("socket.io")(http, {

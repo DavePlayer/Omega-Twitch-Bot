@@ -55,17 +55,24 @@ var Shortcuts = function () {
     var _a = react_1.useState([]), sounds = _a[0], setSounds = _a[1];
     react_1.useEffect(function () {
         var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
-            var data, json;
+            var data, json, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetch("http://127.0.0.1:3200/sounds")];
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, fetch("http://127.0.0.1:3200/sounds")];
                     case 1:
                         data = _a.sent();
                         return [4 /*yield*/, data.json()];
                     case 2:
                         json = _a.sent();
                         setSounds(json);
-                        return [2 /*return*/];
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_1 = _a.sent();
+                        console.log(err_1);
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
                 }
             });
         }); };

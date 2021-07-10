@@ -19,12 +19,17 @@ WebServer.get("/", (req: express.Request, res: express.Response) => {
     res.sendfile(path.resolve(`${__dirname}/obs_html/index.html`));
 });
 
-WebServer.get("/sounds", (req, res) => {
+WebServer.get("/sounds", (req: express.Request, res: express.Response) => {
     console.log("some send request for sounds json");
-    const file = fs.readFileSync(appPath() + "/sounds.json", "utf-8");
-    const json = JSON.parse(file);
-    console.log(json);
-    res.json(json);
+    console.log(fs.existsSync(appPath() + "/sounds.json"));
+    if (fs.existsSync(appPath() + "/sounds.json")) {
+        const file = fs.readFileSync(appPath() + "/sounds.json", "utf-8");
+        const json = JSON.parse(file);
+        console.log(json);
+        res.json(json);
+    } else {
+        res.status(404).json({ error: "no sounds found" });
+    }
 });
 
 const http = require("http").createServer();
