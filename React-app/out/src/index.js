@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = __importDefault(require("react"));
+var jsx_runtime_1 = require("react/jsx-runtime");
 var react_dom_1 = __importDefault(require("react-dom"));
-react_dom_1.default.render(react_1.default.createElement("div", null, "works"), document.querySelector('#root'));
+var App_1 = require("./App");
+react_dom_1.default.render(jsx_runtime_1.jsx(App_1.App, {}, void 0), document.querySelector("#root"));
 //# sourceMappingURL=index.js.map
