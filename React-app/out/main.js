@@ -10,15 +10,22 @@ var express_1 = __importDefault(require("express"));
 var cors_1 = __importDefault(require("cors"));
 var tmi_js_1 = __importDefault(require("tmi.js"));
 var dotenv_1 = __importDefault(require("dotenv"));
+var fs_1 = __importDefault(require("fs"));
+var original_fs_1 = require("original-fs");
 dotenv_1.default.config();
-//require('electron-reload')(path.join(process.cwd(), 'node_modules', 'electron'));
-console.log(path_1.default.join(__dirname, "node_modules", "electron"));
-console.log(process.cwd());
-console.log(path_1.default.join(process.cwd(), "node_modules", "electron"));
+//require("electron-reload")(process.cwd());
 var WebServer = express_1.default();
 WebServer.use(cors_1.default());
+WebServer.use(express_1.default.json());
 WebServer.get("/", function (req, res) {
     res.sendfile(path_1.default.resolve(__dirname + "/obs_html/index.html"));
+});
+WebServer.get("/sounds", function (req, res) {
+    console.log("some send request for sounds json");
+    var file = fs_1.default.readFileSync(appPath() + "/sounds.json", "utf-8");
+    var json = JSON.parse(file);
+    console.log(json);
+    res.json(json);
 });
 var http = require("http").createServer();
 var wws = require("socket.io")(http, {
@@ -79,7 +86,7 @@ clientTwitch.on("connected", function () {
 });
 clientTwitch.on("cheer", function (channel, userstate, message) {
     // Do your stuff.
-    console.log(userstate.bits, "-----------");
+    console.log(userstate.bits, "-------------");
     //clientTwitch.say(process.env.USERNAME as string, `Ktoś dał donate ${userstate.bits}, więc daj znać dave, że twitch dobrze podaje cheersy`)
     wws.emit("timer:cheer", userstate.bits);
     window.webContents.send("timer:console", "someone cheered " + userstate.bits + " bits");
@@ -87,7 +94,31 @@ clientTwitch.on("cheer", function (channel, userstate, message) {
 var app = electron_1.default.app, BrowserWindow = electron_1.default.BrowserWindow, ipcMain = electron_1.default.ipcMain;
 // process.env.NODE_ENV = 'production'
 var window;
+var appPath = function () {
+    switch (process.platform) {
+        case "darwin": {
+            return path_1.default.join(process.env.HOME, "Library", "Application Support", "omega");
+        }
+        case "win32": {
+            return process.env.APPDATA + "omega";
+        }
+        case "linux": {
+            return process.env.HOME + "/.omega";
+        }
+    }
+};
 app.on("ready", function () {
+    console.log(appPath());
+    if (!original_fs_1.existsSync(appPath())) {
+        fs_1.default.mkdir(appPath(), function (err) {
+            if (err)
+                throw err;
+            console.log("created .omega");
+        });
+    }
+    else {
+        console.log(".omega already exist");
+    }
     window = new BrowserWindow({
         width: 600,
         height: 550,

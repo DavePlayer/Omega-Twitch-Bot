@@ -5,9 +5,12 @@ import { ipcRenderer } from "electron";
 export const Console: React.FC = () => {
     const Console: consoleContext = useContext(consoleContext);
     useEffect(() => {
-        ipcRenderer.on("timer:console", (e, message) => {
-            Console.log(message as string);
-        });
+        if (Console.listens == false) {
+            ipcRenderer.on("timer:console", (e, message) => {
+                Console.log(message as string);
+            });
+            Console.setListens(true);
+        }
     }, []);
     return (
         <textarea

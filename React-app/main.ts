@@ -1,4 +1,4 @@
-import electron from "electron";
+import electron, { remote } from "electron";
 import url from "url";
 import path from "path";
 import express from "express";
@@ -6,18 +6,25 @@ import SocketIO from "socket.io";
 import cors from "cors";
 import tmi from "tmi.js";
 import dotenv from "dotenv";
+import fs from "fs";
+import { existsSync } from "original-fs";
 dotenv.config();
-//require('electron-reload')(path.join(process.cwd(), 'node_modules', 'electron'));
-
-console.log(path.join(__dirname, "node_modules", "electron"));
-console.log(process.cwd());
-console.log(path.join(process.cwd(), "node_modules", "electron"));
+//require("electron-reload")(process.cwd());
 
 const WebServer: express.Application = express();
 WebServer.use(cors());
+WebServer.use(express.json());
 
 WebServer.get("/", (req: express.Request, res: express.Response) => {
     res.sendfile(path.resolve(`${__dirname}/obs_html/index.html`));
+});
+
+WebServer.get("/sounds", (req, res) => {
+    console.log("some send request for sounds json");
+    const file = fs.readFileSync(appPath() + "/sounds.json", "utf-8");
+    const json = JSON.parse(file);
+    console.log(json);
+    res.json(json);
 });
 
 const http = require("http").createServer();
@@ -93,7 +100,7 @@ clientTwitch.on(
     "cheer",
     (channel: any, userstate: tmi.Userstate, message: any) => {
         // Do your stuff.
-        console.log(userstate.bits, "-----------");
+        console.log(userstate.bits, "-------------");
         //clientTwitch.say(process.env.USERNAME as string, `Ktoś dał donate ${userstate.bits}, więc daj znać dave, że twitch dobrze podaje cheersy`)
         wws.emit("timer:cheer", userstate.bits);
         window.webContents.send(
@@ -109,7 +116,35 @@ const { app, BrowserWindow, ipcMain } = electron;
 
 let window: electron.BrowserWindow;
 
+const appPath = () => {
+    switch (process.platform) {
+        case "darwin": {
+            return path.join(
+                process.env.HOME,
+                "Library",
+                "Application Support",
+                "omega"
+            );
+        }
+        case "win32": {
+            return process.env.APPDATA + "omega";
+        }
+        case "linux": {
+            return process.env.HOME + "/.omega";
+        }
+    }
+};
+
 app.on("ready", () => {
+    console.log(appPath());
+    if (!existsSync(appPath())) {
+        fs.mkdir(appPath(), (err) => {
+            if (err) throw err;
+            console.log("created .omega");
+        });
+    } else {
+        console.log(".omega already exist");
+    }
     window = new BrowserWindow({
         width: 600,
         height: 550,

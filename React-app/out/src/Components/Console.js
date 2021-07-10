@@ -8,9 +8,12 @@ var electron_1 = require("electron");
 var Console = function () {
     var Console = react_1.useContext(App_1.consoleContext);
     react_1.useEffect(function () {
-        electron_1.ipcRenderer.on("timer:console", function (e, message) {
-            Console.log(message);
-        });
+        if (Console.listens == false) {
+            electron_1.ipcRenderer.on("timer:console", function (e, message) {
+                Console.log(message);
+            });
+            Console.setListens(true);
+        }
     }, []);
     return (jsx_runtime_1.jsx("textarea", { value: Console.content, id: "console", readOnly: true }, void 0));
 };
