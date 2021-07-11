@@ -106,6 +106,7 @@ WebServer.post("/sounds", (req: express.Request, res: express.Response) => {
         },
     ];
     writeSoundJson(json);
+    res.json({ status: "OK" });
 });
 
 const http = require("http").createServer();

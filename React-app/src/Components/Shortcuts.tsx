@@ -12,19 +12,19 @@ export interface sound {
 
 export const Shortcuts: React.FC = () => {
     const [sounds, setSounds] = useState<Array<sound>>([]);
+    const fetchData = async () => {
+        try {
+            const data = await fetch("http://127.0.0.1:3200/sounds");
+            const json = await data.json();
+            setSounds(json);
+        } catch (err) {
+            console.log(err);
+        }
+    };
     const [showWrapper, setShowWrapper] = useState<boolean>(false);
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await fetch("http://127.0.0.1:3200/sounds");
-                const json = await data.json();
-                setSounds(json);
-            } catch (err) {
-                console.log(err);
-            }
-        };
         fetchData();
-    }, []);
+    }, [showWrapper]);
 
     const handleAddSound = () => {
         console.log(`adding sound`);
@@ -38,7 +38,12 @@ export const Shortcuts: React.FC = () => {
                 {sounds.length > 0 &&
                     sounds.map((sound) => <SoundSquare sound={sound} />)}
             </section>
-            {showWrapper && <AddSoundWrapper setShowWrapper={setShowWrapper} />}
+            {showWrapper && (
+                <AddSoundWrapper
+                    fetchData={() => fetchData}
+                    setShowWrapper={setShowWrapper}
+                />
+            )}
         </main>
     );
 };

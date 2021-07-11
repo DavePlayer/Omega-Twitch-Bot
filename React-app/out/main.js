@@ -105,6 +105,7 @@ WebServer.post("/sounds", function (req, res) {
         },
     ]);
     writeSoundJson(json);
+    res.json({ status: "OK" });
 });
 var http = require("http").createServer();
 var wws = require("socket.io")(http, {

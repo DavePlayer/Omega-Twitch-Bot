@@ -20,7 +20,7 @@ exports.AddSoundWrapper = void 0;
 var jsx_runtime_1 = require("react/jsx-runtime");
 var react_1 = require("react");
 var AddSoundWrapper = function (_a) {
-    var setShowWrapper = _a.setShowWrapper;
+    var setShowWrapper = _a.setShowWrapper, fetchData = _a.fetchData;
     var _b = react_1.useState([]), keys = _b[0], setKeys = _b[1];
     var _c = react_1.useState(""), shortcut = _c[0], setShortcut = _c[1];
     var _d = react_1.useState([]), files = _d[0], setFiles = _d[1];
@@ -56,7 +56,12 @@ var AddSoundWrapper = function (_a) {
             method: "POST",
             body: rawData,
         })
-            .then(function (data) { return console.log(data); })
+            .then(function (data) {
+            console.log(data);
+            console.log("CLOSe eeeshjkaf ");
+            setShowWrapper(false);
+            //fetchData();
+        })
             .catch(function (err) { return console.log(err); });
     };
     return (jsx_runtime_1.jsx("div", __assign({ className: "wrapper" }, { children: jsx_runtime_1.jsxs("form", __assign({ action: "#", onSubmit: function (e) { return handleSubmit(e); }, className: "box" }, { children: [jsx_runtime_1.jsx("h1", { children: "Add sound" }, void 0), jsx_runtime_1.jsx("input", { value: name, onChange: function (e) { return setName(e.target.value); }, type: "text", placeholder: "Name" }, void 0), jsx_runtime_1.jsx("input", { type: "search", className: "search", placeholder: "shortcut", onKeyDown: function (e) {
@@ -75,7 +80,7 @@ var AddSoundWrapper = function (_a) {
                         setFiles(function (prev) { return __spreadArray(__spreadArray([], prev), [e.target.files]); });
                     } }, void 0), jsx_runtime_1.jsx("input", { type: "file", className: "mp3", onChange: function (e) {
                         setFiles(function (prev) { return __spreadArray(__spreadArray([], prev), [e.target.files]); });
-                    } }, void 0), jsx_runtime_1.jsx("button", { children: "Upload Sound" }, void 0), jsx_runtime_1.jsx("button", __assign({ onClick: function () { return setShowWrapper(false); } }, { children: "Cancel" }), void 0)] }), void 0) }), void 0));
+                    } }, void 0), jsx_runtime_1.jsx("button", __assign({ type: "submit" }, { children: "Upload Sound" }), void 0), jsx_runtime_1.jsx("button", __assign({ onClick: function () { return setShowWrapper(false); } }, { children: "Cancel" }), void 0)] }), void 0) }), void 0));
 };
 exports.AddSoundWrapper = AddSoundWrapper;
 //# sourceMappingURL=AddSoundWrapper.js.map

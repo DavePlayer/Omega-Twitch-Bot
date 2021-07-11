@@ -4,9 +4,13 @@ import { handleSubmit } from "./Inputs";
 
 interface props {
     setShowWrapper: React.Dispatch<React.SetStateAction<boolean>>;
+    fetchData: () => void;
 }
 
-export const AddSoundWrapper: React.FC<props> = ({ setShowWrapper }) => {
+export const AddSoundWrapper: React.FC<props> = ({
+    setShowWrapper,
+    fetchData,
+}) => {
     const [keys, setKeys] = useState<Array<string>>([]);
     const [shortcut, setShortcut] = useState<string>("");
     const [files, setFiles] = useState<Array<any>>([]);
@@ -41,7 +45,12 @@ export const AddSoundWrapper: React.FC<props> = ({ setShowWrapper }) => {
             method: "POST",
             body: rawData,
         })
-            .then((data) => console.log(data))
+            .then((data) => {
+                console.log(data);
+                console.log("CLOSe eeeshjkaf ");
+                setShowWrapper(false);
+                //fetchData();
+            })
             .catch((err) => console.log(err));
     };
     return (
@@ -87,7 +96,7 @@ export const AddSoundWrapper: React.FC<props> = ({ setShowWrapper }) => {
                         setFiles((prev) => [...prev, e.target.files]);
                     }}
                 />
-                <button>Upload Sound</button>
+                <button type="submit">Upload Sound</button>
                 <button onClick={() => setShowWrapper(false)}>Cancel</button>
             </form>
         </div>

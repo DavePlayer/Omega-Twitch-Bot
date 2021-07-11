@@ -54,38 +54,38 @@ var SoundSquare_1 = require("./SoundSquare");
 var AddSoundWrapper_1 = require("./AddSoundWrapper");
 var Shortcuts = function () {
     var _a = react_1.useState([]), sounds = _a[0], setSounds = _a[1];
+    var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
+        var data, json, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 3, , 4]);
+                    return [4 /*yield*/, fetch("http://127.0.0.1:3200/sounds")];
+                case 1:
+                    data = _a.sent();
+                    return [4 /*yield*/, data.json()];
+                case 2:
+                    json = _a.sent();
+                    setSounds(json);
+                    return [3 /*break*/, 4];
+                case 3:
+                    err_1 = _a.sent();
+                    console.log(err_1);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
+            }
+        });
+    }); };
     var _b = react_1.useState(false), showWrapper = _b[0], setShowWrapper = _b[1];
     react_1.useEffect(function () {
-        var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
-            var data, json, err_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, fetch("http://127.0.0.1:3200/sounds")];
-                    case 1:
-                        data = _a.sent();
-                        return [4 /*yield*/, data.json()];
-                    case 2:
-                        json = _a.sent();
-                        setSounds(json);
-                        return [3 /*break*/, 4];
-                    case 3:
-                        err_1 = _a.sent();
-                        console.log(err_1);
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
-                }
-            });
-        }); };
         fetchData();
-    }, []);
+    }, [showWrapper]);
     var handleAddSound = function () {
         console.log("adding sound");
         setShowWrapper(true);
     };
     return (jsx_runtime_1.jsxs("main", __assign({ className: "short" }, { children: [jsx_runtime_1.jsx("h1", { children: "Soundboard" }, void 0), jsx_runtime_1.jsx("button", __assign({ onClick: function () { return handleAddSound(); } }, { children: "Add sound" }), void 0), jsx_runtime_1.jsx("section", __assign({ className: "sound-board" }, { children: sounds.length > 0 &&
-                    sounds.map(function (sound) { return jsx_runtime_1.jsx(SoundSquare_1.SoundSquare, { sound: sound }, void 0); }) }), void 0), showWrapper && jsx_runtime_1.jsx(AddSoundWrapper_1.AddSoundWrapper, { setShowWrapper: setShowWrapper }, void 0)] }), void 0));
+                    sounds.map(function (sound) { return jsx_runtime_1.jsx(SoundSquare_1.SoundSquare, { sound: sound }, void 0); }) }), void 0), showWrapper && (jsx_runtime_1.jsx(AddSoundWrapper_1.AddSoundWrapper, { fetchData: function () { return fetchData; }, setShowWrapper: setShowWrapper }, void 0))] }), void 0));
 };
 exports.Shortcuts = Shortcuts;
 //# sourceMappingURL=Shortcuts.js.map
