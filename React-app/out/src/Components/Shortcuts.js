@@ -51,8 +51,10 @@ exports.Shortcuts = void 0;
 var jsx_runtime_1 = require("react/jsx-runtime");
 var react_1 = require("react");
 var SoundSquare_1 = require("./SoundSquare");
+var AddSoundWrapper_1 = require("./AddSoundWrapper");
 var Shortcuts = function () {
     var _a = react_1.useState([]), sounds = _a[0], setSounds = _a[1];
+    var _b = react_1.useState(true), showWrapper = _b[0], setShowWrapper = _b[1];
     react_1.useEffect(function () {
         var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
             var data, json, err_1;
@@ -78,7 +80,11 @@ var Shortcuts = function () {
         }); };
         fetchData();
     }, []);
-    return (jsx_runtime_1.jsxs("main", __assign({ className: "short" }, { children: [jsx_runtime_1.jsx("h1", { children: "Soundboard" }, void 0), jsx_runtime_1.jsx("section", __assign({ className: "sound-board" }, { children: sounds.map(function (sound) { return (jsx_runtime_1.jsx(SoundSquare_1.SoundSquare, { sound: sound }, void 0)); }) }), void 0)] }), void 0));
+    var handleAddSound = function () {
+        console.log("adding sound");
+    };
+    return (jsx_runtime_1.jsxs("main", __assign({ className: "short" }, { children: [jsx_runtime_1.jsx("h1", { children: "Soundboard" }, void 0), jsx_runtime_1.jsx("button", { children: "Add sound" }, void 0), jsx_runtime_1.jsx("section", __assign({ className: "sound-board" }, { children: sounds.length > 0 &&
+                    sounds.map(function (sound) { return jsx_runtime_1.jsx(SoundSquare_1.SoundSquare, { sound: sound }, void 0); }) }), void 0), showWrapper && jsx_runtime_1.jsx(AddSoundWrapper_1.AddSoundWrapper, {}, void 0)] }), void 0));
 };
 exports.Shortcuts = Shortcuts;
 //# sourceMappingURL=Shortcuts.js.map

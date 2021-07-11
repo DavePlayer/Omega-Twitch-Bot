@@ -1,4 +1,4 @@
-import electron, { remote } from "electron";
+import electron, { globalShortcut } from "electron";
 import url from "url";
 import path from "path";
 import express from "express";
@@ -21,7 +21,6 @@ WebServer.get("/", (req: express.Request, res: express.Response) => {
 
 WebServer.get("/sounds", (req: express.Request, res: express.Response) => {
     console.log("some send request for sounds json");
-    console.log(fs.existsSync(appPath() + "/sounds.json"));
     if (fs.existsSync(appPath() + "/sounds.json")) {
         const file = fs.readFileSync(appPath() + "/sounds.json", "utf-8");
         const json = JSON.parse(file);
@@ -150,6 +149,10 @@ app.on("ready", () => {
     } else {
         console.log(".omega already exist");
     }
+    //registering shourtcuts even when app is not focused
+    globalShortcut.register("Control + Alt + v", () =>
+        console.log("ztrl+alt+v")
+    );
     window = new BrowserWindow({
         width: 600,
         height: 550,

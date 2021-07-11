@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { SoundSquare } from "./SoundSquare";
+import { AddSoundWrapper } from "./AddSoundWrapper";
 
 export interface sound {
-    soundPath: string;
-    thumbnailPath: string;
     name: string;
     keyBinding: string;
+    soundPath: string;
+    thumbnailPath: string;
     volume: number;
 }
 
 export const Shortcuts: React.FC = () => {
     const [sounds, setSounds] = useState<Array<sound>>([]);
+    const [showWrapper, setShowWrapper] = useState<boolean>(true);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -23,13 +25,19 @@ export const Shortcuts: React.FC = () => {
         };
         fetchData();
     }, []);
+
+    const handleAddSound = () => {
+        console.log(`adding sound`);
+    };
     return (
         <main className="short">
             <h1>Soundboard</h1>
+            <button>Add sound</button>
             <section className="sound-board">
                 {sounds.length > 0 &&
                     sounds.map((sound) => <SoundSquare sound={sound} />)}
             </section>
+            {showWrapper && <AddSoundWrapper />}
         </main>
     );
 };

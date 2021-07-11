@@ -1,9 +1,28 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var electron_1 = __importDefault(require("electron"));
+var electron_1 = __importStar(require("electron"));
 var url_1 = __importDefault(require("url"));
 var path_1 = __importDefault(require("path"));
 var express_1 = __importDefault(require("express"));
@@ -22,7 +41,6 @@ WebServer.get("/", function (req, res) {
 });
 WebServer.get("/sounds", function (req, res) {
     console.log("some send request for sounds json");
-    console.log(fs_1.default.existsSync(appPath() + "/sounds.json"));
     if (fs_1.default.existsSync(appPath() + "/sounds.json")) {
         var file = fs_1.default.readFileSync(appPath() + "/sounds.json", "utf-8");
         var json = JSON.parse(file);
@@ -125,6 +143,10 @@ app.on("ready", function () {
     else {
         console.log(".omega already exist");
     }
+    //registering shourtcuts even when app is not focused
+    electron_1.globalShortcut.register("Control + Alt + v", function () {
+        return console.log("ztrl+alt+v");
+    });
     window = new BrowserWindow({
         width: 600,
         height: 550,
