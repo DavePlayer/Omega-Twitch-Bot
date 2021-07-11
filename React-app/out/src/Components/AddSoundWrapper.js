@@ -19,11 +19,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AddSoundWrapper = void 0;
 var jsx_runtime_1 = require("react/jsx-runtime");
 var react_1 = require("react");
-var AddSoundWrapper = function () {
-    var _a = react_1.useState([]), keys = _a[0], setKeys = _a[1];
-    var _b = react_1.useState(""), shortcut = _b[0], setShortcut = _b[1];
-    var _c = react_1.useState([]), files = _c[0], setFiles = _c[1];
-    var _d = react_1.useState(""), name = _d[0], setName = _d[1];
+var AddSoundWrapper = function (_a) {
+    var setShowWrapper = _a.setShowWrapper;
+    var _b = react_1.useState([]), keys = _b[0], setKeys = _b[1];
+    var _c = react_1.useState(""), shortcut = _c[0], setShortcut = _c[1];
+    var _d = react_1.useState([]), files = _d[0], setFiles = _d[1];
+    var _e = react_1.useState(""), name = _e[0], setName = _e[1];
     react_1.useEffect(function () {
         //     const listener: EventListener = (e: Event) => {
         //         console.log(e);
@@ -47,7 +48,7 @@ var AddSoundWrapper = function () {
         console.log(shortcut);
         console.log(name);
         var rawData = new FormData();
-        rawData.append("thunbnail", files[0][0]);
+        rawData.append("thumbnail", files[0][0]);
         rawData.append("sound", files[1][0]);
         rawData.append("shortcut", shortcut);
         rawData.append("name", name);
@@ -74,7 +75,7 @@ var AddSoundWrapper = function () {
                         setFiles(function (prev) { return __spreadArray(__spreadArray([], prev), [e.target.files]); });
                     } }, void 0), jsx_runtime_1.jsx("input", { type: "file", className: "mp3", onChange: function (e) {
                         setFiles(function (prev) { return __spreadArray(__spreadArray([], prev), [e.target.files]); });
-                    } }, void 0), jsx_runtime_1.jsx("button", { children: "Upload Sound" }, void 0), jsx_runtime_1.jsx("button", { children: "Cancel" }, void 0)] }), void 0) }), void 0));
+                    } }, void 0), jsx_runtime_1.jsx("button", { children: "Upload Sound" }, void 0), jsx_runtime_1.jsx("button", __assign({ onClick: function () { return setShowWrapper(false); } }, { children: "Cancel" }), void 0)] }), void 0) }), void 0));
 };
 exports.AddSoundWrapper = AddSoundWrapper;
 //# sourceMappingURL=AddSoundWrapper.js.map

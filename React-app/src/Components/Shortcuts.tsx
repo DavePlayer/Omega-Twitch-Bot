@@ -12,7 +12,7 @@ export interface sound {
 
 export const Shortcuts: React.FC = () => {
     const [sounds, setSounds] = useState<Array<sound>>([]);
-    const [showWrapper, setShowWrapper] = useState<boolean>(true);
+    const [showWrapper, setShowWrapper] = useState<boolean>(false);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -28,16 +28,17 @@ export const Shortcuts: React.FC = () => {
 
     const handleAddSound = () => {
         console.log(`adding sound`);
+        setShowWrapper(true);
     };
     return (
         <main className="short">
             <h1>Soundboard</h1>
-            <button>Add sound</button>
+            <button onClick={() => handleAddSound()}>Add sound</button>
             <section className="sound-board">
                 {sounds.length > 0 &&
                     sounds.map((sound) => <SoundSquare sound={sound} />)}
             </section>
-            {showWrapper && <AddSoundWrapper />}
+            {showWrapper && <AddSoundWrapper setShowWrapper={setShowWrapper} />}
         </main>
     );
 };

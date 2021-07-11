@@ -18,6 +18,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -32,6 +37,7 @@ var dotenv_1 = __importDefault(require("dotenv"));
 var fs_1 = __importDefault(require("fs"));
 var original_fs_1 = require("original-fs");
 var express_fileupload_1 = __importDefault(require("express-fileupload"));
+var stream_1 = require("stream");
 dotenv_1.default.config();
 //require("electron-reload")(process.cwd());
 var WebServer = express_1.default();
@@ -53,11 +59,52 @@ WebServer.get("/sounds", function (req, res) {
         res.status(404).json({ error: "no sounds found" });
     }
 });
+WebServer.get("/getImage", function (req, res) {
+    console.log(req.query);
+    //res.sendFile(req.query.path as string);
+    var r = fs_1.default.createReadStream(req.query.path); // or any other way to get a readable stream
+    var ps = new stream_1.Stream.PassThrough(); // <---- this makes a trick with stream error handling
+    stream_1.Stream.pipeline(r, ps, // <---- this makes a trick with stream error handling
+    function (err) {
+        if (err) {
+            console.log(err); // No such file or any other kind of error
+            return res.sendStatus(400);
+        }
+    });
+    ps.pipe(res); // <---- this makes a trick with stream error handling
+});
 WebServer.post("/sounds", function (req, res) {
     console.log("uploading new sound");
     console.log("body: ", req.body);
     console.log("files: ", req.files);
-    console.log("-------------------------");
+    var thumbnailFile = req.files.thumbnail;
+    var soundFile = req.files.sound;
+    fs_1.default.writeFile(path_1.default.join(appPath(), "thumbnails", thumbnailFile.name), thumbnailFile.data, function (err) {
+        if (err)
+            throw err;
+        else {
+            window.webContents.send("timer:console", "created " + thumbnailFile.name + " file");
+        }
+    });
+    fs_1.default.writeFile(path_1.default.join(appPath(), "sounds", soundFile.name), soundFile.data, function (err) {
+        if (err)
+            throw err;
+        else {
+            window.webContents.send("timer:console", "created " + soundFile.name + " file");
+        }
+    });
+    var file = fs_1.default.readFileSync(path_1.default.join(appPath(), "sounds.json"), "utf-8");
+    var json = JSON.parse(file);
+    json = __spreadArray(__spreadArray([], json), [
+        {
+            name: req.body.name,
+            keyBinding: req.body.shortcut,
+            soundPath: path_1.default.join(appPath(), "sounds", soundFile.name),
+            thumbnailPath: path_1.default.join(appPath(), "thumbnails", thumbnailFile.name),
+            volume: 100,
+        },
+    ]);
+    writeSoundJson(json);
 });
 var http = require("http").createServer();
 var wws = require("socket.io")(http, {
@@ -149,22 +196,6 @@ var writeSoundJson = function (json) {
 };
 app.on("ready", function () {
     console.log(appPath());
-    if (!original_fs_1.existsSync(appPath())) {
-        fs_1.default.mkdir(appPath(), function (err) {
-            if (err)
-                throw err;
-            console.log("created .omega");
-        });
-        fs_1.default.mkdir(path_1.default.join(appPath(), "thumbnails"), function (err) {
-            if (err)
-                throw err;
-            console.log("created thumbnails");
-        });
-        writeSoundJson();
-    }
-    else {
-        console.log(".omega already exist");
-    }
     //registering shourtcuts even when app is not focused
     electron_1.globalShortcut.register("Control + Alt + v", function () {
         return console.log("ztrl+alt+v");
@@ -184,6 +215,31 @@ app.on("ready", function () {
         protocol: "file",
         slashes: true,
     }));
+    if (!original_fs_1.existsSync(appPath())) {
+        fs_1.default.mkdir(appPath(), function (err) {
+            if (err)
+                throw err;
+            console.log("created .omega");
+            window.webContents.send("timer:console", "created " + appPath());
+            fs_1.default.mkdir(path_1.default.join(appPath(), "thumbnails"), function (err) {
+                if (err)
+                    throw err;
+                console.log("created thumbnails folder");
+                window.webContents.send("timer:console", "created " + path_1.default.join(appPath(), "thumbnails"));
+            });
+            fs_1.default.mkdir(path_1.default.join(appPath(), "sounds"), function (err) {
+                if (err)
+                    throw err;
+                console.log("created sounds folder");
+                window.webContents.send("timer:console", "created " + path_1.default.join(appPath(), "sounds.json"));
+            });
+        });
+        writeSoundJson();
+    }
+    else {
+        console.log(".omega already exist");
+        window.webContents.send("timer:console", "omega already exist");
+    }
 });
 ipcMain.on("timer:updateClock", function (e, clock) {
     console.log(clock);

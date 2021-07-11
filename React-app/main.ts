@@ -1,4 +1,4 @@
-import electron, { globalShortcut } from "electron";
+import electron, { globalShortcut, session } from "electron";
 import url from "url";
 import path from "path";
 import express from "express";
@@ -10,6 +10,8 @@ import fs from "fs";
 import { existsSync } from "original-fs";
 import upload from "express-fileupload";
 import { sound } from "./src/Components/Shortcuts";
+import { ExportSpecifier } from "typescript";
+import { Stream } from "stream";
 dotenv.config();
 //require("electron-reload")(process.cwd());
 
@@ -37,11 +39,73 @@ WebServer.get("/sounds", (req: express.Request, res: express.Response) => {
     }
 });
 
+WebServer.get("/getImage", (req: express.Request, res: express.Response) => {
+    console.log(req.query);
+    //res.sendFile(req.query.path as string);
+    const r = fs.createReadStream(req.query.path as string); // or any other way to get a readable stream
+    const ps = new Stream.PassThrough(); // <---- this makes a trick with stream error handling
+    Stream.pipeline(
+        r,
+        ps, // <---- this makes a trick with stream error handling
+        (err) => {
+            if (err) {
+                console.log(err); // No such file or any other kind of error
+                return res.sendStatus(400);
+            }
+        }
+    );
+    ps.pipe(res); // <---- this makes a trick with stream error handling
+});
+
 WebServer.post("/sounds", (req: express.Request, res: express.Response) => {
     console.log("uploading new sound");
     console.log("body: ", req.body);
     console.log(`files: `, req.files);
-    console.log("-------------------------");
+    const thumbnailFile: any = req.files.thumbnail;
+    const soundFile: any = req.files.sound;
+    fs.writeFile(
+        path.join(appPath(), "thumbnails", thumbnailFile.name),
+        thumbnailFile.data,
+        (err) => {
+            if (err) throw err;
+            else {
+                window.webContents.send(
+                    "timer:console",
+                    `created ${thumbnailFile.name} file`
+                );
+            }
+        }
+    );
+    fs.writeFile(
+        path.join(appPath(), "sounds", soundFile.name),
+        soundFile.data,
+        (err) => {
+            if (err) throw err;
+            else {
+                window.webContents.send(
+                    "timer:console",
+                    `created ${soundFile.name} file`
+                );
+            }
+        }
+    );
+    const file = fs.readFileSync(path.join(appPath(), "sounds.json"), "utf-8");
+    let json: Array<sound> = JSON.parse(file);
+    json = [
+        ...json,
+        {
+            name: req.body.name,
+            keyBinding: req.body.shortcut,
+            soundPath: path.join(appPath(), "sounds", soundFile.name),
+            thumbnailPath: path.join(
+                appPath(),
+                "thumbnails",
+                thumbnailFile.name
+            ),
+            volume: 100,
+        },
+    ];
+    writeSoundJson(json);
 });
 
 const http = require("http").createServer();
@@ -168,19 +232,6 @@ const writeSoundJson = (json?: Array<sound>) => {
 
 app.on("ready", () => {
     console.log(appPath());
-    if (!existsSync(appPath())) {
-        fs.mkdir(appPath(), (err) => {
-            if (err) throw err;
-            console.log("created .omega");
-        });
-        fs.mkdir(path.join(appPath(), "thumbnails"), (err) => {
-            if (err) throw err;
-            console.log("created thumbnails");
-        });
-        writeSoundJson();
-    } else {
-        console.log(".omega already exist");
-    }
     //registering shourtcuts even when app is not focused
     globalShortcut.register("Control + Alt + v", () =>
         console.log("ztrl+alt+v")
@@ -202,6 +253,33 @@ app.on("ready", () => {
             slashes: true,
         })
     );
+    if (!existsSync(appPath())) {
+        fs.mkdir(appPath(), (err) => {
+            if (err) throw err;
+            console.log("created .omega");
+            window.webContents.send("timer:console", `created ${appPath()}`);
+            fs.mkdir(path.join(appPath(), "thumbnails"), (err) => {
+                if (err) throw err;
+                console.log("created thumbnails folder");
+                window.webContents.send(
+                    "timer:console",
+                    `created ${path.join(appPath(), "thumbnails")}`
+                );
+            });
+            fs.mkdir(path.join(appPath(), "sounds"), (err) => {
+                if (err) throw err;
+                console.log("created sounds folder");
+                window.webContents.send(
+                    "timer:console",
+                    `created ${path.join(appPath(), "sounds.json")}`
+                );
+            });
+        });
+        writeSoundJson();
+    } else {
+        console.log(".omega already exist");
+        window.webContents.send("timer:console", `omega already exist`);
+    }
 });
 
 ipcMain.on("timer:updateClock", (e, clock) => {

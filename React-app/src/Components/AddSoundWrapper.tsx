@@ -2,7 +2,11 @@ import { raw } from "express";
 import React, { useEffect, useState } from "react";
 import { handleSubmit } from "./Inputs";
 
-export const AddSoundWrapper: React.FC = () => {
+interface props {
+    setShowWrapper: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const AddSoundWrapper: React.FC<props> = ({ setShowWrapper }) => {
     const [keys, setKeys] = useState<Array<string>>([]);
     const [shortcut, setShortcut] = useState<string>("");
     const [files, setFiles] = useState<Array<any>>([]);
@@ -29,7 +33,7 @@ export const AddSoundWrapper: React.FC = () => {
         console.log(shortcut);
         console.log(name);
         const rawData = new FormData();
-        rawData.append("thunbnail", files[0][0]);
+        rawData.append("thumbnail", files[0][0]);
         rawData.append("sound", files[1][0]);
         rawData.append("shortcut", shortcut);
         rawData.append("name", name);
@@ -84,7 +88,7 @@ export const AddSoundWrapper: React.FC = () => {
                     }}
                 />
                 <button>Upload Sound</button>
-                <button>Cancel</button>
+                <button onClick={() => setShowWrapper(false)}>Cancel</button>
             </form>
         </div>
     );
