@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch",
     "build": "tsc && electron ./out/main.js",
-    "start": "concurrently \"webpack --watch\" \"tsc && nodemon --exec electron ./out/main.js\""
+    "start": "concurrently \"webpack --watch\" \"nodemon --exec electron ./out/main.js\"",
+    "server": "tsc --watch"
   },
   "author": "Dave_Player",
   "license": "ISC",
@@ -20,6 +21,7 @@
     "css-loader": "^5.2.6",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
     "final-form": "^4.20.2",
     "html-webpack-plugin": "^5.3.2",
     "react": "^17.0.2",
@@ -37,10 +39,12 @@
     "webpack-cli": "^4.7.2"
   },
   "devDependencies": {
+    "@types/express-fileupload": "^1.1.7",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
     "electron": "^13.1.6",
     "electron-reload": "^1.5.0",
+    "ts-node": "^10.1.0",
     "typescript": "^4.3.5"
   }
 }

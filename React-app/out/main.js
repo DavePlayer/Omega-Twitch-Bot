@@ -31,18 +31,20 @@ var tmi_js_1 = __importDefault(require("tmi.js"));
 var dotenv_1 = __importDefault(require("dotenv"));
 var fs_1 = __importDefault(require("fs"));
 var original_fs_1 = require("original-fs");
+var express_fileupload_1 = __importDefault(require("express-fileupload"));
 dotenv_1.default.config();
 //require("electron-reload")(process.cwd());
 var WebServer = express_1.default();
 WebServer.use(cors_1.default());
 WebServer.use(express_1.default.json());
+WebServer.use(express_fileupload_1.default());
 WebServer.get("/", function (req, res) {
     res.sendfile(path_1.default.resolve(__dirname + "/obs_html/index.html"));
 });
 WebServer.get("/sounds", function (req, res) {
     console.log("some send request for sounds json");
-    if (fs_1.default.existsSync(appPath() + "/sounds.json")) {
-        var file = fs_1.default.readFileSync(appPath() + "/sounds.json", "utf-8");
+    if (fs_1.default.existsSync(path_1.default.join(appPath(), "sounds.json"))) {
+        var file = fs_1.default.readFileSync(path_1.default.join(appPath(), "sounds.json"), "utf-8");
         var json = JSON.parse(file);
         console.log(json);
         res.json(json);
@@ -50,6 +52,12 @@ WebServer.get("/sounds", function (req, res) {
     else {
         res.status(404).json({ error: "no sounds found" });
     }
+});
+WebServer.post("/sounds", function (req, res) {
+    console.log("uploading new sound");
+    console.log("body: ", req.body);
+    console.log("files: ", req.files);
+    console.log("-------------------------");
 });
 var http = require("http").createServer();
 var wws = require("socket.io")(http, {
@@ -124,11 +132,19 @@ var appPath = function () {
             return path_1.default.join(process.env.HOME, "Library", "Application Support", "omega");
         }
         case "win32": {
-            return process.env.APPDATA + "omega";
+            return process.env.APPDATA + "\\omega";
         }
         case "linux": {
             return process.env.HOME + "/.omega";
         }
+    }
+};
+var writeSoundJson = function (json) {
+    if (!json) {
+        fs_1.default.writeFileSync(path_1.default.join(appPath(), "sounds.json"), JSON.stringify([]));
+    }
+    else {
+        fs_1.default.writeFileSync(path_1.default.join(appPath(), "sounds.json"), JSON.stringify(json));
     }
 };
 app.on("ready", function () {
@@ -139,6 +155,12 @@ app.on("ready", function () {
                 throw err;
             console.log("created .omega");
         });
+        fs_1.default.mkdir(path_1.default.join(appPath(), "thumbnails"), function (err) {
+            if (err)
+                throw err;
+            console.log("created thumbnails");
+        });
+        writeSoundJson();
     }
     else {
         console.log(".omega already exist");
