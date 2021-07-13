@@ -25,6 +25,7 @@ var AddSoundWrapper = function (_a) {
     var _c = react_1.useState(""), shortcut = _c[0], setShortcut = _c[1];
     var _d = react_1.useState([]), files = _d[0], setFiles = _d[1];
     var _e = react_1.useState(""), name = _e[0], setName = _e[1];
+    var _f = react_1.useState("Keys as [] ; ' , . / \\ may cause bugs of key combinations"), error = _f[0], setError = _f[1];
     react_1.useEffect(function () {
         //     const listener: EventListener = (e: Event) => {
         //         console.log(e);
@@ -43,26 +44,40 @@ var AddSoundWrapper = function (_a) {
         };
     }, []);
     var handleSubmit = function (e) {
+        console.log(files[0][0]);
+        console.log(files[0][0].name);
         e.preventDefault();
-        console.log(files);
-        console.log(shortcut);
-        console.log(name);
-        var rawData = new FormData();
-        rawData.append("thumbnail", files[0][0]);
-        rawData.append("sound", files[1][0]);
-        rawData.append("shortcut", shortcut);
-        rawData.append("name", name);
-        fetch("http://127.0.0.1:3200/sounds", {
-            method: "POST",
-            body: rawData,
-        })
-            .then(function (data) {
-            console.log(data);
-            console.log("CLOSe eeeshjkaf ");
-            setShowWrapper(false);
-            //fetchData();
-        })
-            .catch(function (err) { return console.log(err); });
+        console.log(files[0][0].name.includes("png") ||
+            files[0][0].name.includes("jpg"), files[0][0].name);
+        console.log(files[1][0].name.includes("mp3") ||
+            files[1][0].name.includes("wav"), files[1][0].name);
+        if ((files[0][0].name.includes("png") ||
+            files[0][0].name.includes("jpg")) &&
+            (files[1][0].name.includes("mp3") ||
+                files[1][0].name.includes("wav"))) {
+            console.log(files);
+            console.log(shortcut);
+            console.log(name);
+            var rawData = new FormData();
+            rawData.append("thumbnail", files[0][0]);
+            rawData.append("sound", files[1][0]);
+            rawData.append("shortcut", shortcut);
+            rawData.append("name", name);
+            fetch("http://127.0.0.1:3200/sounds", {
+                method: "POST",
+                body: rawData,
+            })
+                .then(function (data) {
+                console.log(data);
+                console.log("CLOSe eeeshjkaf ");
+                setShowWrapper(false);
+                //fetchData();
+            })
+                .catch(function (err) { return console.log(err); });
+        }
+        else {
+            return setError("You messed up Files");
+        }
     };
     return (jsx_runtime_1.jsx("div", __assign({ className: "wrapper" }, { children: jsx_runtime_1.jsxs("form", __assign({ action: "#", onSubmit: function (e) { return handleSubmit(e); }, className: "box" }, { children: [jsx_runtime_1.jsx("h1", { children: "Add sound" }, void 0), jsx_runtime_1.jsx("input", { value: name, onChange: function (e) { return setName(e.target.value); }, type: "text", placeholder: "Name" }, void 0), jsx_runtime_1.jsx("input", { type: "search", className: "search", placeholder: "shortcut", onKeyDown: function (e) {
                         console.log(e.key);
@@ -77,10 +92,22 @@ var AddSoundWrapper = function (_a) {
                             return prev + (" + " + e.key);
                         });
                     }, onChange: function () { return null; }, value: shortcut }, void 0), jsx_runtime_1.jsx("input", { type: "file", onChange: function (e) {
-                        setFiles(function (prev) { return __spreadArray(__spreadArray([], prev), [e.target.files]); });
+                        files.length <= 1
+                            ? setFiles(function (prev) { return __spreadArray(__spreadArray([], prev), [e.target.files]); })
+                            : setFiles(function (prev) {
+                                return prev.map(function (file, i) {
+                                    return (i == 0 ? e.target.files : file) || e;
+                                });
+                            });
                     } }, void 0), jsx_runtime_1.jsx("input", { type: "file", className: "mp3", onChange: function (e) {
-                        setFiles(function (prev) { return __spreadArray(__spreadArray([], prev), [e.target.files]); });
-                    } }, void 0), jsx_runtime_1.jsx("button", __assign({ type: "submit" }, { children: "Upload Sound" }), void 0), jsx_runtime_1.jsx("button", __assign({ onClick: function () { return setShowWrapper(false); } }, { children: "Cancel" }), void 0)] }), void 0) }), void 0));
+                        files.length <= 1
+                            ? setFiles(function (prev) { return __spreadArray(__spreadArray([], prev), [e.target.files]); })
+                            : setFiles(function (prev) {
+                                return prev.map(function (file, i) {
+                                    return (i == 1 ? e.target.files : file) || e;
+                                });
+                            });
+                    } }, void 0), jsx_runtime_1.jsx("p", { children: error }, void 0), jsx_runtime_1.jsx("button", __assign({ type: "submit" }, { children: "Upload Sound" }), void 0), jsx_runtime_1.jsx("button", __assign({ onClick: function () { return setShowWrapper(false); } }, { children: "Cancel" }), void 0)] }), void 0) }), void 0));
 };
 exports.AddSoundWrapper = AddSoundWrapper;
 //# sourceMappingURL=AddSoundWrapper.js.map

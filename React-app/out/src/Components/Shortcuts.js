@@ -85,7 +85,7 @@ var Shortcuts = function () {
         setShowWrapper(true);
     };
     return (jsx_runtime_1.jsxs("main", __assign({ className: "short" }, { children: [jsx_runtime_1.jsx("h1", { children: "Soundboard" }, void 0), jsx_runtime_1.jsx("button", __assign({ onClick: function () { return handleAddSound(); } }, { children: "Add sound" }), void 0), jsx_runtime_1.jsx("section", __assign({ className: "sound-board" }, { children: sounds.length > 0 &&
-                    sounds.map(function (sound) { return jsx_runtime_1.jsx(SoundSquare_1.SoundSquare, { sound: sound }, void 0); }) }), void 0), showWrapper && (jsx_runtime_1.jsx(AddSoundWrapper_1.AddSoundWrapper, { fetchData: function () { return fetchData; }, setShowWrapper: setShowWrapper }, void 0))] }), void 0));
+                    sounds.map(function (sound, i) { return (jsx_runtime_1.jsx(SoundSquare_1.SoundSquare, { sound: sound }, i)); }) }), void 0), showWrapper && (jsx_runtime_1.jsx(AddSoundWrapper_1.AddSoundWrapper, { fetchData: function () { return fetchData; }, setShowWrapper: setShowWrapper }, void 0))] }), void 0));
 };
 exports.Shortcuts = Shortcuts;
 //# sourceMappingURL=Shortcuts.js.map

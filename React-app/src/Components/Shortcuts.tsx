@@ -8,6 +8,7 @@ export interface sound {
     soundPath: string;
     thumbnailPath: string;
     volume: number;
+    duration?: number;
 }
 
 export const Shortcuts: React.FC = () => {
@@ -36,7 +37,9 @@ export const Shortcuts: React.FC = () => {
             <button onClick={() => handleAddSound()}>Add sound</button>
             <section className="sound-board">
                 {sounds.length > 0 &&
-                    sounds.map((sound) => <SoundSquare sound={sound} />)}
+                    sounds.map((sound, i) => (
+                        <SoundSquare key={i} sound={sound} />
+                    ))}
             </section>
             {showWrapper && (
                 <AddSoundWrapper

@@ -39,6 +39,7 @@ var original_fs_1 = require("original-fs");
 var express_fileupload_1 = __importDefault(require("express-fileupload"));
 var stream_1 = require("stream");
 dotenv_1.default.config();
+var exec = require("child_process").exec;
 //require("electron-reload")(process.cwd());
 var WebServer = express_1.default();
 WebServer.use(cors_1.default());
@@ -49,15 +50,9 @@ WebServer.get("/", function (req, res) {
 });
 WebServer.get("/sounds", function (req, res) {
     console.log("some send request for sounds json");
-    if (fs_1.default.existsSync(path_1.default.join(appPath(), "sounds.json"))) {
-        var file = fs_1.default.readFileSync(path_1.default.join(appPath(), "sounds.json"), "utf-8");
-        var json = JSON.parse(file);
-        console.log(json);
-        res.json(json);
-    }
-    else {
-        res.status(404).json({ error: "no sounds found" });
-    }
+    loadSounds()
+        .then(function (sounds) { return res.json(sounds); })
+        .catch(function (err) { return res.status(err.status).json(err.error); });
 });
 WebServer.get("/getImage", function (req, res) {
     console.log(req.query);
@@ -77,8 +72,15 @@ WebServer.post("/sounds", function (req, res) {
     console.log("uploading new sound");
     console.log("body: ", req.body);
     console.log("files: ", req.files);
+    // These files don't have proper types, so i had to do that
     var thumbnailFile = req.files.thumbnail;
     var soundFile = req.files.sound;
+    thumbnailFile.name = String(thumbnailFile.name)
+        .replace(/[^a-zA-Z0-9-. ]/g, "")
+        .replace(/\s+/g, "-");
+    soundFile.name = String(soundFile.name)
+        .replace(/[^a-zA-Z0-9-. ]/g, "")
+        .replace(/\s+/g, "-");
     fs_1.default.writeFile(path_1.default.join(appPath(), "thumbnails", thumbnailFile.name), thumbnailFile.data, function (err) {
         if (err)
             throw err;
@@ -99,12 +101,13 @@ WebServer.post("/sounds", function (req, res) {
         {
             name: req.body.name,
             keyBinding: req.body.shortcut,
-            soundPath: path_1.default.join(appPath(), "sounds", soundFile.name),
-            thumbnailPath: path_1.default.join(appPath(), "thumbnails", thumbnailFile.name),
+            soundPath: path_1.default.join(appPath(), "sounds", soundFile.name.replace(/\s+/g, "-").replace(/\s+/g, "-")),
+            thumbnailPath: path_1.default.join(appPath(), "thumbnails", thumbnailFile.name.replace(/\s+/g, "-").replace(/\s+/g, "-")),
             volume: 100,
+            duration: soundFile.data.duration,
         },
     ]);
-    writeSoundJson(json);
+    writeSoundJson(json, function () { return mapSounds("reload"); });
     res.json({ status: "OK" });
 });
 var http = require("http").createServer();
@@ -187,12 +190,64 @@ var appPath = function () {
         }
     }
 };
-var writeSoundJson = function (json) {
-    if (!json) {
-        fs_1.default.writeFileSync(path_1.default.join(appPath(), "sounds.json"), JSON.stringify([]));
-    }
-    else {
-        fs_1.default.writeFileSync(path_1.default.join(appPath(), "sounds.json"), JSON.stringify(json));
+var writeSoundJson = function (json, callback) {
+    fs_1.default.writeFileSync(path_1.default.join(appPath(), "sounds.json"), JSON.stringify(json ? json : []));
+    if (callback)
+        callback();
+};
+var loadSounds = function () {
+    return new Promise(function (res, rej) {
+        if (fs_1.default.existsSync(path_1.default.join(appPath(), "sounds.json"))) {
+            var file = fs_1.default.readFileSync(path_1.default.join(appPath(), "sounds.json"), "utf-8");
+            var json = JSON.parse(file);
+            console.log(json);
+            res(json);
+        }
+        else {
+            rej({ status: 404, error: "no sounds found" });
+        }
+    });
+};
+var loadedSounds = [];
+var isPlaying = false;
+var mapSounds = function (action) {
+    switch (action) {
+        case "reload":
+            electron_1.globalShortcut.unregisterAll();
+            mapSounds("load");
+            break;
+        case "load":
+        default:
+            loadSounds()
+                .then(function (sounds) { return (loadedSounds = sounds); })
+                .then(function () {
+                return loadedSounds.map(function (sound) {
+                    electron_1.globalShortcut.register(sound.keyBinding, function () {
+                        console.log(sound.keyBinding);
+                        if (isPlaying == false) {
+                            console.log("mplayer " + sound.soundPath.replace(/\s+/g, "\\ "));
+                            var cmd = exec("mplayer " + sound.soundPath.replace(/\s+/g, "\\ "));
+                            console.log(sound.duration);
+                            cmd.stdout.on("data", function (data) {
+                                console.log(data.toString());
+                            });
+                            cmd.stdout.on("data", function (data) {
+                                console.log(data.toString());
+                            });
+                            // what to do with data coming from the standard error
+                            cmd.stderr.on("data", function (data) {
+                                console.log(data.toString());
+                            });
+                            // what to do when the command is done
+                            cmd.on("exit", function (code) {
+                                console.log("program ended with code: " + code);
+                            });
+                        }
+                    });
+                });
+            })
+                .catch(function (err) { return console.log(err); });
+            break;
     }
 };
 app.on("ready", function () {
@@ -240,6 +295,7 @@ app.on("ready", function () {
     else {
         console.log(".omega already exist");
         window.webContents.send("timer:console", "omega already exist");
+        mapSounds();
     }
 });
 ipcMain.on("timer:updateClock", function (e, clock) {

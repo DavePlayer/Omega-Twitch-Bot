@@ -10,9 +10,9 @@ import fs from "fs";
 import { existsSync } from "original-fs";
 import upload from "express-fileupload";
 import { sound } from "./src/Components/Shortcuts";
-import { ExportSpecifier } from "typescript";
 import { Stream } from "stream";
 dotenv.config();
+let exec = require("child_process").exec;
 //require("electron-reload")(process.cwd());
 
 const WebServer: express.Application = express();
@@ -26,17 +26,9 @@ WebServer.get("/", (req: express.Request, res: express.Response) => {
 
 WebServer.get("/sounds", (req: express.Request, res: express.Response) => {
     console.log("some send request for sounds json");
-    if (fs.existsSync(path.join(appPath(), "sounds.json"))) {
-        const file = fs.readFileSync(
-            path.join(appPath(), "sounds.json"),
-            "utf-8"
-        );
-        const json = JSON.parse(file);
-        console.log(json);
-        res.json(json);
-    } else {
-        res.status(404).json({ error: "no sounds found" });
-    }
+    loadSounds()
+        .then((sounds) => res.json(sounds))
+        .catch((err) => res.status(err.status).json(err.error));
 });
 
 WebServer.get("/getImage", (req: express.Request, res: express.Response) => {
@@ -61,8 +53,16 @@ WebServer.post("/sounds", (req: express.Request, res: express.Response) => {
     console.log("uploading new sound");
     console.log("body: ", req.body);
     console.log(`files: `, req.files);
+    // These files don't have proper types, so i had to do that
     const thumbnailFile: any = req.files.thumbnail;
     const soundFile: any = req.files.sound;
+    thumbnailFile.name = String(thumbnailFile.name)
+        .replace(/[^a-zA-Z0-9-. ]/g, "")
+        .replace(/\s+/g, "-");
+    soundFile.name = String(soundFile.name)
+        .replace(/[^a-zA-Z0-9-. ]/g, "")
+        .replace(/\s+/g, "-");
+
     fs.writeFile(
         path.join(appPath(), "thumbnails", thumbnailFile.name),
         thumbnailFile.data,
@@ -96,16 +96,21 @@ WebServer.post("/sounds", (req: express.Request, res: express.Response) => {
         {
             name: req.body.name,
             keyBinding: req.body.shortcut,
-            soundPath: path.join(appPath(), "sounds", soundFile.name),
+            soundPath: path.join(
+                appPath(),
+                "sounds",
+                soundFile.name.replace(/\s+/g, "-").replace(/\s+/g, "-")
+            ),
             thumbnailPath: path.join(
                 appPath(),
                 "thumbnails",
-                thumbnailFile.name
+                thumbnailFile.name.replace(/\s+/g, "-").replace(/\s+/g, "-")
             ),
             volume: 100,
+            duration: soundFile.data.duration,
         },
     ];
-    writeSoundJson(json);
+    writeSoundJson(json, () => mapSounds("reload"));
     res.json({ status: "OK" });
 });
 
@@ -217,17 +222,80 @@ const appPath = () => {
     }
 };
 
-const writeSoundJson = (json?: Array<sound>) => {
-    if (!json) {
-        fs.writeFileSync(
-            path.join(appPath(), "sounds.json"),
-            JSON.stringify([])
-        );
-    } else {
-        fs.writeFileSync(
-            path.join(appPath(), "sounds.json"),
-            JSON.stringify(json)
-        );
+const writeSoundJson = (json?: Array<sound>, callback?: () => void) => {
+    fs.writeFileSync(
+        path.join(appPath(), "sounds.json"),
+        JSON.stringify(json ? json : [])
+    );
+    if (callback) callback();
+};
+
+const loadSounds = () =>
+    new Promise<Array<sound>>((res, rej) => {
+        if (fs.existsSync(path.join(appPath(), "sounds.json"))) {
+            const file = fs.readFileSync(
+                path.join(appPath(), "sounds.json"),
+                "utf-8"
+            );
+            const json: Array<sound> = JSON.parse(file);
+            console.log(json);
+            res(json);
+        } else {
+            rej({ status: 404, error: "no sounds found" });
+        }
+    });
+let loadedSounds: Array<sound> = [];
+let isPlaying: boolean = false;
+const mapSounds = (action?: string) => {
+    switch (action) {
+        case "reload":
+            globalShortcut.unregisterAll();
+            mapSounds("load");
+            break;
+        case "load":
+        default:
+            loadSounds()
+                .then((sounds) => (loadedSounds = sounds))
+                .then(() =>
+                    loadedSounds.map((sound: sound) => {
+                        globalShortcut.register(sound.keyBinding, () => {
+                            console.log(sound.keyBinding);
+                            if (isPlaying == false) {
+                                console.log(
+                                    `mplayer ${sound.soundPath.replace(
+                                        /\s+/g,
+                                        "\\ "
+                                    )}`
+                                );
+                                const cmd = exec(
+                                    `mplayer ${sound.soundPath.replace(
+                                        /\s+/g,
+                                        "\\ "
+                                    )}`
+                                );
+                                console.log(sound.duration);
+                                cmd.stdout.on("data", function (data: any) {
+                                    console.log(data.toString());
+                                });
+                                cmd.stdout.on("data", function (data: any) {
+                                    console.log(data.toString());
+                                });
+                                // what to do with data coming from the standard error
+                                cmd.stderr.on("data", function (data: any) {
+                                    console.log(data.toString());
+                                });
+                                // what to do when the command is done
+                                cmd.on("exit", function (code: any) {
+                                    console.log(
+                                        "program ended with code: " + code
+                                    );
+                                });
+                            }
+                        });
+                    })
+                )
+                .catch((err) => console.log(err));
+            break;
     }
 };
 
@@ -280,6 +348,7 @@ app.on("ready", () => {
     } else {
         console.log(".omega already exist");
         window.webContents.send("timer:console", `omega already exist`);
+        mapSounds();
     }
 });
 
