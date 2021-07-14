@@ -47,12 +47,12 @@ var AddSoundWrapper = function (_a) {
         console.log(files[0][0]);
         console.log(files[0][0].name);
         e.preventDefault();
-        console.log(files[0][0].name.includes("png") ||
-            files[0][0].name.includes("jpg"), files[0][0].name);
-        console.log(files[1][0].name.includes("mp3") ||
-            files[1][0].name.includes("wav"), files[1][0].name);
+        if (name.length == 0 || shortcut.length == 0) {
+            return setError("Some input is empty");
+        }
         if ((files[0][0].name.includes("png") ||
-            files[0][0].name.includes("jpg")) &&
+            files[0][0].name.includes("jpg") ||
+            files[0][0].name.includes("jpeg")) &&
             (files[1][0].name.includes("mp3") ||
                 files[1][0].name.includes("wav"))) {
             console.log(files);

@@ -9,7 +9,7 @@ export const Navigation: React.FC = () => {
                     <li>Timer</li>
                 </Link>
                 <Link to="/shortcuts">
-                    <li>Shortcuts</li>
+                    <li>Soundboard</li>
                 </Link>
             </ol>
         </nav>

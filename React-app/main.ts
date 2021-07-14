@@ -262,32 +262,29 @@ const mapSounds = (action?: string) => {
                             console.log(sound.keyBinding);
                             if (isPlaying == false) {
                                 console.log(
-                                    `mplayer ${sound.soundPath.replace(
-                                        /\s+/g,
-                                        "\\ "
-                                    )}`
+                                    `mpv ${sound.soundPath} --volume=${sound.volume}`
                                 );
-                                const cmd = exec(
-                                    `mplayer ${sound.soundPath.replace(
-                                        /\s+/g,
-                                        "\\ "
-                                    )}`
-                                );
+                                const cmd = exec(`mplayer ${sound.soundPath}`);
                                 console.log(sound.duration);
-                                cmd.stdout.on("data", function (data: any) {
-                                    console.log(data.toString());
-                                });
                                 cmd.stdout.on("data", function (data: any) {
                                     console.log(data.toString());
                                 });
                                 // what to do with data coming from the standard error
                                 cmd.stderr.on("data", function (data: any) {
                                     console.log(data.toString());
+                                    window.webContents.send(
+                                        "timer:console",
+                                        data.toString()
+                                    );
                                 });
                                 // what to do when the command is done
                                 cmd.on("exit", function (code: any) {
                                     console.log(
                                         "program ended with code: " + code
+                                    );
+                                    window.webContents.send(
+                                        "timer:console",
+                                        `Ended playing sound ${code}`
                                     );
                                 });
                             }

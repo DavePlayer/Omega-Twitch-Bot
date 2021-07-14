@@ -15,7 +15,7 @@ exports.Navigation = void 0;
 var jsx_runtime_1 = require("react/jsx-runtime");
 var react_router_dom_1 = require("react-router-dom");
 var Navigation = function () {
-    return (jsx_runtime_1.jsx("nav", { children: jsx_runtime_1.jsxs("ol", { children: [jsx_runtime_1.jsx(react_router_dom_1.Link, __assign({ to: "/" }, { children: jsx_runtime_1.jsx("li", { children: "Timer" }, void 0) }), void 0), jsx_runtime_1.jsx(react_router_dom_1.Link, __assign({ to: "/shortcuts" }, { children: jsx_runtime_1.jsx("li", { children: "Shortcuts" }, void 0) }), void 0)] }, void 0) }, void 0));
+    return (jsx_runtime_1.jsx("nav", { children: jsx_runtime_1.jsxs("ol", { children: [jsx_runtime_1.jsx(react_router_dom_1.Link, __assign({ to: "/" }, { children: jsx_runtime_1.jsx("li", { children: "Timer" }, void 0) }), void 0), jsx_runtime_1.jsx(react_router_dom_1.Link, __assign({ to: "/shortcuts" }, { children: jsx_runtime_1.jsx("li", { children: "Soundboard" }, void 0) }), void 0)] }, void 0) }, void 0));
 };
 exports.Navigation = Navigation;
 //# sourceMappingURL=Navigation.js.map

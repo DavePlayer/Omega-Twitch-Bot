@@ -225,22 +225,21 @@ var mapSounds = function (action) {
                     electron_1.globalShortcut.register(sound.keyBinding, function () {
                         console.log(sound.keyBinding);
                         if (isPlaying == false) {
-                            console.log("mplayer " + sound.soundPath.replace(/\s+/g, "\\ "));
-                            var cmd = exec("mplayer " + sound.soundPath.replace(/\s+/g, "\\ "));
+                            console.log("mpv " + sound.soundPath + " --volume=" + sound.volume);
+                            var cmd = exec("mplayer " + sound.soundPath);
                             console.log(sound.duration);
-                            cmd.stdout.on("data", function (data) {
-                                console.log(data.toString());
-                            });
                             cmd.stdout.on("data", function (data) {
                                 console.log(data.toString());
                             });
                             // what to do with data coming from the standard error
                             cmd.stderr.on("data", function (data) {
                                 console.log(data.toString());
+                                window.webContents.send("timer:console", data.toString());
                             });
                             // what to do when the command is done
                             cmd.on("exit", function (code) {
                                 console.log("program ended with code: " + code);
+                                window.webContents.send("timer:console", "Ended playing sound " + code);
                             });
                         }
                     });
