@@ -24,7 +24,9 @@ header {
     background-color: rgba(255, 255, 255, 0.05);
     height: 2em;
     display: flex;
-    justify-content: center;
+    position: sticky;
+    top: 0;
+    justify-content: flex-end;
     -webkit-app-region: drag;
 }
 
@@ -38,6 +40,10 @@ header .name {
     font-size: 1.5em;
     text-align: center;
     flex-basis: 80%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 
 header .exit {
@@ -52,6 +58,8 @@ header .exit span {
 
 nav {
     width: 100%;
+    position: sticky;
+    top: 2em;
 }
 
 nav ol {
@@ -85,35 +93,13 @@ main section {
 }
 
 main input,
-main textarea {
+textarea {
     border: 2px solid rgba(1, 1, 1, 0);
     border-radius: 0.2em;
     padding: 0.4em;
     text-align: center;
     background-color: #3a3a3d;
     color: #e0e0e2;
-}
-
-textarea {
-    text-align: left !important;
-    resize: none;
-    width: 40em;
-    height: 10em;
-}
-
-textarea::-webkit-scrollbar {
-    width: 0.5em;
-}
-
-textarea::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-}
-
-textarea::-webkit-scrollbar-thumb {
-    border-radius: 0.2em;
-    background-color: #3a3a3d;
-    outline: white;
 }
 
 main input:focus,
@@ -184,10 +170,30 @@ button {
     cursor: pointer;
 }
 
+.short {
+    overflow: scroll;
+    max-height: 28em;
+    overflow-x: hidden;
+    &::-webkit-scrollbar {
+        width: 0.5em;
+    }
+
+    &::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 0.2em;
+        background-color: #3a3a3d;
+        outline: white;
+    }
+}
+
 .sound-board {
     margin-top: 1em;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     width: 100%;
     gap: 1em;
     .sound {
@@ -277,4 +283,56 @@ button {
 .search::-webkit-search-cancel-button {
     -webkit-appearance: searchfield-cancel-button;
     color: #9147ff;
+}
+
+.consoleWrapper {
+    position: fixed;
+    bottom: -55%;
+    left: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 20em;
+    display: flex;
+    justify-content: center;
+    background: rgb(24, 24, 27);
+    transition: 0.3s linear;
+    background: linear-gradient(
+        180deg,
+        rgba(24, 24, 27, 0) 0%,
+        rgba(0, 0, 0, 1) 45%
+    );
+    &:hover {
+        bottom: -25%;
+        background: linear-gradient(
+            180deg,
+            rgba(24, 24, 27, 0) 0%,
+            rgba(0, 0, 0, 1) 100%
+        );
+    }
+    &:hover textarea {
+        top: 0;
+    }
+    textarea {
+        text-align: left !important;
+        resize: none;
+        width: 40em;
+        height: 10em;
+        position: absolute;
+        bottom: 0;
+    }
+
+    textarea::-webkit-scrollbar {
+        width: 0.5em;
+    }
+
+    textarea::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+
+    textarea::-webkit-scrollbar-thumb {
+        border-radius: 0.2em;
+        background-color: #3a3a3d;
+        outline: white;
+    }
 }

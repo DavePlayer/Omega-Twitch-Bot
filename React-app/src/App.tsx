@@ -37,11 +37,11 @@ export const App: React.FC = () => {
                         <main className="timer">
                             <Inputs />
                             <TimerConfig />
-                            <Console />
                         </main>
                     )}
                 />
                 <Route path="/shortcuts" exact render={() => <Shortcuts />} />
+                <Console />
             </consoleContext.Provider>
         </Router>
     );

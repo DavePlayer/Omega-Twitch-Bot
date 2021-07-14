@@ -303,9 +303,9 @@ app.on("ready", () => {
         console.log("ztrl+alt+v")
     );
     window = new BrowserWindow({
-        width: 600,
+        width: 800,
         height: 550,
-        frame: true,
+        frame: false,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
