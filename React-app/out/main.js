@@ -226,8 +226,7 @@ var mapSounds = function (action) {
                         console.log(sound.keyBinding);
                         if (isPlaying == false) {
                             console.log("mpv " + sound.soundPath + " --volume=" + sound.volume);
-                            var cmd = exec("mplayer " + sound.soundPath);
-                            console.log(sound.duration);
+                            var cmd = exec("mpv " + sound.soundPath + " --volume=" + sound.volume);
                             cmd.stdout.on("data", function (data) {
                                 console.log(data.toString());
                             });

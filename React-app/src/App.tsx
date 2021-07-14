@@ -11,7 +11,7 @@ import { Shortcuts } from "./Components/Shortcuts";
 export const consoleContext = createContext(null);
 export interface consoleContext {
     content: string;
-    setContent: (arg0: string) => void;
+    setContent: React.Dispatch<React.SetStateAction<string>>;
     log: (value: string) => void;
     listens?: boolean;
     setListens: (value: boolean) => void;

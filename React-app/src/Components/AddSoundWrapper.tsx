@@ -35,8 +35,6 @@ export const AddSoundWrapper: React.FC<props> = ({
             document.removeEventListener("search", () => setShortcut(""));
     }, []);
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        console.log(files[0][0]);
-        console.log(files[0][0].name);
         e.preventDefault();
         if (name.length == 0 || shortcut.length == 0) {
             return setError("Some input is empty");

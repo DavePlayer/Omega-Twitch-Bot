@@ -264,8 +264,9 @@ const mapSounds = (action?: string) => {
                                 console.log(
                                     `mpv ${sound.soundPath} --volume=${sound.volume}`
                                 );
-                                const cmd = exec(`mplayer ${sound.soundPath}`);
-                                console.log(sound.duration);
+                                const cmd = exec(
+                                    `mpv ${sound.soundPath} --volume=${sound.volume}`
+                                );
                                 cmd.stdout.on("data", function (data: any) {
                                     console.log(data.toString());
                                 });

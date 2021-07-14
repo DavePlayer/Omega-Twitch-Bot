@@ -29,6 +29,8 @@ var Console = function () {
     }, []);
     react_1.useEffect(function () {
         AreaRef.current.scrollTop = AreaRef.current.scrollHeight;
+        if (Console.content.length > 200)
+            Console.setContent("" + function (prev) { return prev.slice(180, 200); });
     }, [Console.content]);
     return (jsx_runtime_1.jsx("section", __assign({ className: "consoleWrapper" }, { children: jsx_runtime_1.jsx("textarea", { ref: AreaRef, value: Console.content, id: "console", readOnly: true }, void 0) }), void 0));
 };

@@ -15,6 +15,8 @@ export const Console: React.FC = () => {
     }, []);
     useEffect(() => {
         AreaRef.current.scrollTop = AreaRef.current.scrollHeight;
+        if (Console.content.length > 200)
+            Console.setContent((prev) => prev.slice(180, prev.length));
     }, [Console.content]);
     return (
         <section className="consoleWrapper">
