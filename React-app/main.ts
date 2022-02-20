@@ -1,4 +1,7 @@
-import electron, { globalShortcut, session } from "electron";
+import electron, {
+    globalShortcut,
+    session
+} from "electron";
 import url from "url";
 import path from "path";
 import express from "express";
@@ -7,10 +10,16 @@ import cors from "cors";
 import tmi from "tmi.js";
 import dotenv from "dotenv";
 import fs from "fs";
-import { existsSync } from "original-fs";
+import {
+    existsSync
+} from "original-fs";
 import upload from "express-fileupload";
-import { sound } from "./src/Components/Shortcuts";
-import { Stream } from "stream";
+import {
+    sound
+} from "./src/Components/Shortcuts";
+import {
+    Stream
+} from "stream";
 dotenv.config();
 let exec = require("child_process").exec;
 //require("electron-reload")(process.cwd());
@@ -21,7 +30,7 @@ WebServer.use(express.json());
 WebServer.use(upload());
 
 WebServer.get("/", (req: express.Request, res: express.Response) => {
-    res.sendfile(path.resolve(`${__dirname}/obs_html/index.html`));
+    res.sendFile(path.resolve(`${__dirname}/obs_html/index.html`));
 });
 
 WebServer.get("/sounds", (req: express.Request, res: express.Response) => {
@@ -90,7 +99,7 @@ WebServer.post("/sounds", (req: express.Request, res: express.Response) => {
         }
     );
     const file = fs.readFileSync(path.join(appPath(), "sounds.json"), "utf-8");
-    let json: Array<sound> = JSON.parse(file);
+    let json: Array < sound > = JSON.parse(file);
     json = [
         ...json,
         {
@@ -111,12 +120,16 @@ WebServer.post("/sounds", (req: express.Request, res: express.Response) => {
         },
     ];
     writeSoundJson(json, () => mapSounds("reload"));
-    res.json({ status: "OK" });
+    res.json({
+        status: "OK"
+    });
 });
 
 const http = require("http").createServer();
 const wws: SocketIO.Server = require("socket.io")(http, {
-    cors: { origin: "*" },
+    cors: {
+        origin: "*"
+    },
 });
 //const wws = new WebSocket.Server({server: require('http').createServer(WebServer)})
 
@@ -136,7 +149,9 @@ wws.on("connection", (socket: SocketIO.Socket) => {
 });
 
 let clientTwitch: tmi.Client = new tmi.Client({
-    options: { debug: true },
+    options: {
+        debug: true
+    },
     connection: {
         secure: true,
         reconnect: true,
@@ -197,7 +212,11 @@ clientTwitch.on(
     }
 );
 
-const { app, BrowserWindow, ipcMain } = electron;
+const {
+    app,
+    BrowserWindow,
+    ipcMain
+} = electron;
 
 // process.env.NODE_ENV = 'production'
 
@@ -222,7 +241,7 @@ const appPath = () => {
     }
 };
 
-const writeSoundJson = (json?: Array<sound>, callback?: () => void) => {
+const writeSoundJson = (json ? : Array < sound > , callback ? : () => void) => {
     fs.writeFileSync(
         path.join(appPath(), "sounds.json"),
         JSON.stringify(json ? json : [])
@@ -231,22 +250,25 @@ const writeSoundJson = (json?: Array<sound>, callback?: () => void) => {
 };
 
 const loadSounds = () =>
-    new Promise<Array<sound>>((res, rej) => {
+    new Promise < Array < sound >> ((res, rej) => {
         if (fs.existsSync(path.join(appPath(), "sounds.json"))) {
             const file = fs.readFileSync(
                 path.join(appPath(), "sounds.json"),
                 "utf-8"
             );
-            const json: Array<sound> = JSON.parse(file);
+            const json: Array < sound > = JSON.parse(file);
             console.log(json);
             res(json);
         } else {
-            rej({ status: 404, error: "no sounds found" });
+            rej({
+                status: 404,
+                error: "no sounds found"
+            });
         }
     });
-let loadedSounds: Array<sound> = [];
+let loadedSounds: Array < sound > = [];
 let isPlaying: boolean = false;
-const mapSounds = (action?: string) => {
+const mapSounds = (action ? : string) => {
     switch (action) {
         case "reload":
             globalShortcut.unregisterAll();
@@ -270,13 +292,17 @@ const mapSounds = (action?: string) => {
                                 cmd.stdout.on("data", function (data: any) {
                                     console.log(data.toString());
                                 });
+                                window.webContents.send(
+                                    "timer:console",
+                                    `started playing sound`
+                                );
                                 // what to do with data coming from the standard error
                                 cmd.stderr.on("data", function (data: any) {
                                     console.log(data.toString());
-                                    window.webContents.send(
-                                        "timer:console",
-                                        data.toString()
-                                    );
+                                    // window.webContents.send(
+                                    //     "timer:console",
+                                    //     data.toString()
+                                    // );
                                 });
                                 // what to do when the command is done
                                 cmd.on("exit", function (code: any) {
@@ -289,6 +315,7 @@ const mapSounds = (action?: string) => {
                                     );
                                 });
                             }
+                            
                         });
                     })
                 )
@@ -306,20 +333,14 @@ app.on("ready", () => {
     window = new BrowserWindow({
         width: 800,
         height: 550,
-        frame: false,
+        frame: true,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
             devTools: true,
         },
     });
-    window.loadURL(
-        url.format({
-            pathname: path.join(__dirname, "src/index.html"),
-            protocol: "file",
-            slashes: true,
-        })
-    );
+    window.loadURL(`file://${__dirname}/src/index.html`);
     if (!existsSync(appPath())) {
         fs.mkdir(appPath(), (err) => {
             if (err) throw err;
@@ -368,7 +389,9 @@ ipcMain.on("app:updateConfig", (e, token, username) => {
     process.env.USERNAME = username;
     console.log(token, username);
     clientTwitch = new tmi.Client({
-        options: { debug: true },
+        options: {
+            debug: true
+        },
         connection: {
             secure: true,
             reconnect: true,

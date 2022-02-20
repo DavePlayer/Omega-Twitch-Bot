@@ -288,7 +288,7 @@ button {
 
 .consoleWrapper {
     position: fixed;
-    bottom: -55%;
+    bottom: -25%;
     left: 0;
     cursor: pointer;
     width: 100%;
@@ -303,7 +303,7 @@ button {
         rgba(0, 0, 0, 1) 45%
     );
     &:hover {
-        bottom: -25%;
+        bottom: -10%;
         background: linear-gradient(
             180deg,
             rgba(24, 24, 27, 0) 0%,
@@ -311,13 +311,14 @@ button {
         );
     }
     &:hover textarea {
-        top: 0;
+        bottom: 30%;
     }
     textarea {
         text-align: left !important;
         resize: none;
         width: 40em;
         height: 10em;
+        transition: bottom 0.3s;
         position: absolute;
         bottom: 0;
     }
