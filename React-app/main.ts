@@ -2,7 +2,6 @@ import electron, {
     globalShortcut,
     session
 } from "electron";
-import url from "url";
 import path from "path";
 import express from "express";
 import SocketIO from "socket.io";

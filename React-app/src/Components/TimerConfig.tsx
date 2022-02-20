@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Form, Field, FieldRenderProps } from "react-final-form";
 import { consoleContext } from "../App";
-import { ipcRenderer } from "electron";
+import { ipcRenderer, shell } from "electron";
 
 const handleSubmit = (
     e: any,
@@ -66,7 +66,7 @@ export const TimerConfig: React.FC = () => {
                                     <Field
                                         type="text"
                                         defaultValue=""
-                                        placeholder="username"
+                                        placeholder="twitch username"
                                         id="username"
                                         name="username"
                                         component={Input}
@@ -74,7 +74,7 @@ export const TimerConfig: React.FC = () => {
                                     />
                                 </section>
                                 <p>
-                                    Click <a>here</a> to get token
+                                    Click <a onClick={() => {shell.openExternal(`https://twitchapps.com/tmi/`); shell.beep()}}> here </a> to get token
                                 </p>
                                 <button>append config</button>
                             </>
