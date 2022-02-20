@@ -10,7 +10,7 @@ import tmi from "tmi.js";
 import dotenv from "dotenv";
 import fs from "fs";
 import {
-    existsSync
+    existsSync, readSync
 } from "original-fs";
 import upload from "express-fileupload";
 import {
@@ -24,9 +24,24 @@ let exec = require("child_process").exec;
 //require("electron-reload")(process.cwd());
 
 const WebServer: express.Application = express();
+const robloxWWW: express.Application = express();
 WebServer.use(cors());
 WebServer.use(express.json());
 WebServer.use(upload());
+
+robloxWWW.set('view engine', 'ejs')
+robloxWWW.set('views', 'roblox-templates')
+
+robloxWWW.get('/', (req: express.Request, res: express.Response) => {
+    res.render('default', 
+        {
+            robloxImageUrl: 'https://tr.rbxcdn.com/da30f07724e81853eb1677a5e43c7c04/150/150/AvatarHeadshot/Png',
+            userName: "mihalx",
+            robuxAmmount: 300,
+            message: "twoja mama"
+        }
+    );
+})
 
 WebServer.get("/", (req: express.Request, res: express.Response) => {
     res.sendFile(path.resolve(`${__dirname}/obs_html/index.html`));
@@ -419,5 +434,11 @@ ipcMain.on("app:updateConfig", (e, token, username) => {
         });
 });
 
-WebServer.listen("3200", () => console.log("listening on port 3200"));
+WebServer.listen("3200", () => {
+    console.log('timer is being listen on port 3200')
+});
+robloxWWW.listen("6969", () => {
+    console.log('roblox donations is being listen on port 6969')
+});
+
 http.listen(8080, () => console.log("http working on 8080"));
