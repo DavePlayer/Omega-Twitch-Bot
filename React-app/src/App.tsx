@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { Header } from "./Components/Header";
 import { Inputs } from "./Components/Inputs";
 import { TimerConfig } from "./Components/TimerConfig";
@@ -7,6 +7,9 @@ import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import { Navigation } from "./Components/Navigation";
 import "./index.scss";
 import { Shortcuts } from "./Components/Shortcuts";
+import { Donate } from "./Components/Donate/Donate";
+import { ipcRenderer, shell } from "electron";
+import { AudioPlayer } from "./audioPlayer/AudioPlayer";
 
 export const consoleContext = createContext(null);
 export interface consoleContext {
@@ -20,13 +23,27 @@ export interface consoleContext {
 export const App: React.FC = () => {
     const [content, setContent] = useState<string>("Debugging program:");
     const [listens, setListens] = useState<boolean>(false);
-    const log = (value: string) =>
-        setContent((prev) => prev + `\n:-- ${value}`);
+    const [link, setLink] = useState<string>(
+        "https://translate.google.com/translate_tts?q=wikawikax%20wrzuci%C5%82a%2050%20bobux.%20%C5%9Bmierdzisz&tl=pl&total=1&idx=0&textlen=39&client=tw-ob&prev=input&ttsspeed=1"
+    );
+    const IPC = ipcRenderer;
+    const [shouldDisplayPlayer, setShouldDisplayPlayer] = useState<boolean>(true);
+    useEffect(() => {
+        console.log("use Effect working. ipcrender not working", IPC);
+        IPC.on("sound::playSound", (e, link) => {
+            console.log("trying to play: ", link);
+            setShouldDisplayPlayer(false);
+            setLink(link);
+            setShouldDisplayPlayer(true);
+        });
+        return () => {
+            IPC.removeAllListeners("sound::playSound");
+        };
+    }, []);
+    const log = (value: string) => setContent((prev) => prev + `\n:-- ${value}`);
     return (
         <Router>
-            <consoleContext.Provider
-                value={{ content, setContent, log, listens, setListens }}
-            >
+            <consoleContext.Provider value={{ content, setContent, log, listens, setListens }}>
                 <Header />
                 <Navigation />
                 <Redirect to="/" />
@@ -36,12 +53,14 @@ export const App: React.FC = () => {
                     render={() => (
                         <main className="timer">
                             <Inputs />
-                            <TimerConfig />
+                            <TimerConfig ipcRenderer={() => ipcRenderer} shell={shell} />
                         </main>
                     )}
                 />
                 <Route path="/shortcuts" exact render={() => <Shortcuts />} />
+                <Route path="/donate" exact render={() => <Donate ipcRenderer={() => ipcRenderer} />} />
                 <Console />
+                <AudioPlayer shouldDisplay={shouldDisplayPlayer} link={link} />
             </consoleContext.Provider>
         </Router>
     );

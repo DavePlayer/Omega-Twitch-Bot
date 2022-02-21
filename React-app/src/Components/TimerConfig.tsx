@@ -1,12 +1,14 @@
+import { ipcRenderer } from "electron/renderer";
 import React, { useState, useContext } from "react";
 import { Form, Field, FieldRenderProps } from "react-final-form";
 import { consoleContext } from "../App";
-import { ipcRenderer, shell } from "electron";
+import { IpcRenderer } from "electron";
 
 const handleSubmit = (
     e: any,
     Console: consoleContext,
-    setDisplayConfig: any
+    setDisplayConfig: any,
+    ipcRenderer: IpcRenderer
 ) => {
     console.log(e);
     Console.log(`Updating Config: ${JSON.stringify(e)}`);
@@ -37,7 +39,10 @@ const checkLength = (value: string) => {
     return undefined;
 };
 
-export const TimerConfig: React.FC = () => {
+export const TimerConfig: React.FC<{
+    ipcRenderer: () => IpcRenderer;
+    shell: any;
+}> = ({ ipcRenderer, shell }) => {
     const [displayConfig, setDisplayConfig] = useState<boolean>(false);
     const Console: consoleContext = useContext(consoleContext);
     return (
@@ -74,7 +79,19 @@ export const TimerConfig: React.FC = () => {
                                     />
                                 </section>
                                 <p>
-                                    Click <a onClick={() => {shell.openExternal(`https://twitchapps.com/tmi/`); shell.beep()}}> here </a> to get token
+                                    Click{" "}
+                                    <a
+                                        onClick={() => {
+                                            shell.openExternal(
+                                                `https://twitchapps.com/tmi/`
+                                            );
+                                            shell.beep();
+                                        }}
+                                    >
+                                        {" "}
+                                        here{" "}
+                                    </a>{" "}
+                                    to get token
                                 </p>
                                 <button>append config</button>
                             </>
@@ -89,7 +106,9 @@ export const TimerConfig: React.FC = () => {
                         )}
                     </form>
                 )}
-                onSubmit={(e) => handleSubmit(e, Console, setDisplayConfig)}
+                onSubmit={(e) =>
+                    handleSubmit(e, Console, setDisplayConfig, ipcRenderer())
+                }
             />
         </>
     );

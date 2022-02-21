@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Roblox Donation</title>
+        <script
+            src="https://cdn.socket.io/3.1.3/socket.io.min.js"
+            integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh"
+            crossorigin="anonymous"
+        ></script>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+            }
+
+            .robuxImg {
+                background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCI+PHBhdGggZD0iTTguMyAzLjdMMy42IDIxLjhsMTguMSA0LjYgNC42LTE4LjEtMTgtNC42em04IDEzLjZsLTMuNS0uOS45LTMuNSAzLjUuOS0uOSAzLjV6IiBmaWxsPSIjMzkzYjNkIi8+PC9zdmc+);
+                background-position: 0 0;
+                width: 30px;
+                height: 30px;
+                display: block;
+            }
+
+            .container {
+                width: 20%;
+                padding: 1em;
+            }
+
+            figure {
+                width: 100%;
+                display: block;
+            }
+
+            figure img {
+                width: 100%;
+                height: 100%;
+                display: block;
+                border-radius: 50%;
+            }
+
+            .info {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 5px;
+            }
+
+            .message {
+                width: 100%;
+                text-align: center;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <figure>
+                <img class="donateImage" src="" alt="roblox image png" />
+            </figure>
+            <div class="info">
+                <p>
+                    <span class="username"></span> donated
+                    <span class="robuxAmmount"></span>
+                </p>
+                <span class="robuxImg"></span>
+            </div>
+            <p class="message"></p>
+        </div>
+        <script>
+            window.onload = () => {
+                const updateDonateContent = (donation) => {
+                    console.log("upodating data: ", donation);
+                    const donateImageBox = document.querySelector(`.donateImage`);
+                    const usernameBox = document.querySelector(`.username`);
+                    const robuxAmmountBox = document.querySelector(`.robuxAmmount`);
+                    const messageBox = document.querySelector(`.message`);
+
+                    // update content
+                    donateImageBox.src = donation.donateImageUrl;
+                    usernameBox.innerText = donation.username;
+                    robuxAmmountBox.innerText = donation.robuxAmmount;
+                    messageBox.innerText = donation.message;
+
+                    // update colors
+                    usernameBox.style.color = settings.userNickColor;
+                    robuxAmmountBox.style.color = settings.robuxAmmountColor;
+                    messageBox.style.color = settings.messageColor;
+                };
+                class Donation {
+                    constructor(imageUrl, username, robuxAmmount, message) {
+                        this.donateImageUrl = imageUrl;
+                        this.username = username;
+                        this.robuxAmmount = robuxAmmount;
+                        this.message = message;
+                    }
+                }
+                let donationQuerry = [
+                    new Donation(
+                        "https://tr.rbxcdn.com/da30f07724e81853eb1677a5e43c7c04/150/150/AvatarHeadshot/Png",
+                        "mihalx",
+                        69,
+                        "nice"
+                    ),
+                ];
+                let settings = {
+                    userNickColor: "#750da8",
+                    robuxAmmountColor: "#750da8",
+                    messageColor: "#f00",
+                };
+
+                if (donationQuerry.length > 0) {
+                    updateDonateContent(donationQuerry[0]);
+                    donationQuerry.shift();
+                }
+                setInterval(() => {
+                    if (donationQuerry.length > 0) {
+                        updateDonateContent(donationQuerry[0]);
+                        donationQuerry.shift();
+                    }
+                }, 10000);
+
+                if (window.WebSocket) {
+                    const socket = io("ws://127.0.0.1:8080");
+                    socket.on("donate::donate", (donateData) => {
+                        console.log(donateData);
+                        if (donateData) {
+                            donationQuerry = [
+                                ...donationQuerry,
+                                new Donation(
+                                    donateData.donateImageUrl,
+                                    donateData.userName,
+                                    donateData.robuxAmmount,
+                                    donateData.message
+                                ),
+                            ];
+                            // settings.donateImageUrl = donateData.donateImageUrl;
+                            // settings.userName = donateData.userName;
+                            // settings.robuxAmmount = donateData.robuxAmmount;
+                            // settings.message = donateData.message;
+                        }
+                    });
+                }
+            };
+        </script>
+    </body>
+</html>

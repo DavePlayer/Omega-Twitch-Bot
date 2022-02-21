@@ -11,6 +11,9 @@ export const Navigation: React.FC = () => {
                 <Link to="/shortcuts">
                     <li>Soundboard</li>
                 </Link>
+                <Link to="/Donate">
+                    <li>Robux Donate</li>
+                </Link>
             </ol>
         </nav>
     );

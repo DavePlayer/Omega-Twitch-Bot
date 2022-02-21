@@ -12,20 +12,18 @@ export const Console: React.FC = () => {
             });
             Console.setListens(true);
         }
+        return () => {
+            ipcRenderer.removeAllListeners("timer:console");
+        };
     }, []);
     useEffect(() => {
+        //clearing console after some amount of characters
         AreaRef.current.scrollTop = AreaRef.current.scrollHeight;
-        if (Console.content.length > 200)
-            Console.setContent((prev) => prev.slice(180, prev.length));
+        if (Console.content.length > 800) Console.setContent((prev) => prev.slice(700, prev.length));
     }, [Console.content]);
     return (
         <section className="consoleWrapper">
-            <textarea
-                ref={AreaRef}
-                value={Console.content}
-                id="console"
-                readOnly={true}
-            ></textarea>
+            <textarea ref={AreaRef} value={Console.content} id="console" readOnly={true}></textarea>
         </section>
     );
 };

@@ -1,7 +1,4 @@
-import electron, {
-    globalShortcut,
-    session
-} from "electron";
+import electron, { globalShortcut, session } from "electron";
 import path from "path";
 import express from "express";
 import SocketIO from "socket.io";
@@ -9,16 +6,12 @@ import cors from "cors";
 import tmi from "tmi.js";
 import dotenv from "dotenv";
 import fs from "fs";
-import {
-    existsSync, readSync
-} from "original-fs";
+import { existsSync, readSync } from "original-fs";
 import upload from "express-fileupload";
-import {
-    sound
-} from "./src/Components/Shortcuts";
-import {
-    Stream
-} from "stream";
+import { sound } from "./src/Components/Shortcuts";
+import { Stream } from "stream";
+import * as googleTTS from "google-tts-api";
+import { Donate } from "./src/Components/Donate/Donate";
 dotenv.config();
 let exec = require("child_process").exec;
 //require("electron-reload")(process.cwd());
@@ -29,19 +22,12 @@ WebServer.use(cors());
 WebServer.use(express.json());
 WebServer.use(upload());
 
-robloxWWW.set('view engine', 'ejs')
-robloxWWW.set('views', 'roblox-templates')
+robloxWWW.set("view engine", "ejs");
+robloxWWW.set("views", "roblox-templates");
 
-robloxWWW.get('/', (req: express.Request, res: express.Response) => {
-    res.render('default', 
-        {
-            robloxImageUrl: 'https://tr.rbxcdn.com/da30f07724e81853eb1677a5e43c7c04/150/150/AvatarHeadshot/Png',
-            userName: "mihalx",
-            robuxAmmount: 300,
-            message: "twoja mama"
-        }
-    );
-})
+robloxWWW.get("/", (req: express.Request, res: express.Response) => {
+    res.sendFile(path.resolve(`${__dirname}/../roblox-templates/default.html`));
+});
 
 WebServer.get("/", (req: express.Request, res: express.Response) => {
     res.sendFile(path.resolve(`${__dirname}/obs_html/index.html`));
@@ -86,44 +72,26 @@ WebServer.post("/sounds", (req: express.Request, res: express.Response) => {
         .replace(/[^a-zA-Z0-9-. ]/g, "")
         .replace(/\s+/g, "-");
 
-    fs.writeFile(
-        path.join(appPath(), "thumbnails", thumbnailFile.name),
-        thumbnailFile.data,
-        (err) => {
-            if (err) throw err;
-            else {
-                window.webContents.send(
-                    "timer:console",
-                    `created ${thumbnailFile.name} file`
-                );
-            }
+    fs.writeFile(path.join(appPath(), "thumbnails", thumbnailFile.name), thumbnailFile.data, (err) => {
+        if (err) throw err;
+        else {
+            window.webContents.send("timer:console", `created ${thumbnailFile.name} file`);
         }
-    );
-    fs.writeFile(
-        path.join(appPath(), "sounds", soundFile.name),
-        soundFile.data,
-        (err) => {
-            if (err) throw err;
-            else {
-                window.webContents.send(
-                    "timer:console",
-                    `created ${soundFile.name} file`
-                );
-            }
+    });
+    fs.writeFile(path.join(appPath(), "sounds", soundFile.name), soundFile.data, (err) => {
+        if (err) throw err;
+        else {
+            window.webContents.send("timer:console", `created ${soundFile.name} file`);
         }
-    );
+    });
     const file = fs.readFileSync(path.join(appPath(), "sounds.json"), "utf-8");
-    let json: Array < sound > = JSON.parse(file);
+    let json: Array<sound> = JSON.parse(file);
     json = [
         ...json,
         {
             name: req.body.name,
             keyBinding: req.body.shortcut,
-            soundPath: path.join(
-                appPath(),
-                "sounds",
-                soundFile.name.replace(/\s+/g, "-").replace(/\s+/g, "-")
-            ),
+            soundPath: path.join(appPath(), "sounds", soundFile.name.replace(/\s+/g, "-").replace(/\s+/g, "-")),
             thumbnailPath: path.join(
                 appPath(),
                 "thumbnails",
@@ -135,14 +103,14 @@ WebServer.post("/sounds", (req: express.Request, res: express.Response) => {
     ];
     writeSoundJson(json, () => mapSounds("reload"));
     res.json({
-        status: "OK"
+        status: "OK",
     });
 });
 
 const http = require("http").createServer();
 const wws: SocketIO.Server = require("socket.io")(http, {
     cors: {
-        origin: "*"
+        origin: "*",
     },
 });
 //const wws = new WebSocket.Server({server: require('http').createServer(WebServer)})
@@ -164,7 +132,7 @@ wws.on("connection", (socket: SocketIO.Socket) => {
 
 let clientTwitch: tmi.Client = new tmi.Client({
     options: {
-        debug: true
+        debug: true,
     },
     connection: {
         secure: true,
@@ -182,10 +150,7 @@ clientTwitch
     .connect()
     .then(() => {
         console.log("connected");
-        window.webContents.send(
-            "timer:console",
-            `pomyślnie połączono z czatem`
-        );
+        window.webContents.send("timer:console", `pomyślnie połączono z czatem`);
         //setTimeout(() => {
         //    clientTwitch.say(process.env.USERNAME as string, 'bits --bitscount 500 Woohoo!')
         //}, 10000)
@@ -205,32 +170,19 @@ clientTwitch
 })*/
 clientTwitch.on("connected", () => {
     console.log("connected properly");
-    clientTwitch.say(
-        process.env.USERNAME as string,
-        "pomyślnie połączono z czatem"
-    );
+    clientTwitch.say(process.env.USERNAME as string, "pomyślnie połączono z czatem");
     //window.webContents.send('timer:console', `pomyślnie połączono z czatem`)
 });
 
-clientTwitch.on(
-    "cheer",
-    (channel: any, userstate: tmi.Userstate, message: any) => {
-        // Do your stuff.
-        console.log(userstate.bits, "-------------");
-        //clientTwitch.say(process.env.USERNAME as string, `Ktoś dał donate ${userstate.bits}, więc daj znać dave, że twitch dobrze podaje cheersy`)
-        wws.emit("timer:cheer", userstate.bits);
-        window.webContents.send(
-            "timer:console",
-            `someone cheered ${userstate.bits} bits`
-        );
-    }
-);
+clientTwitch.on("cheer", (channel: any, userstate: tmi.Userstate, message: any) => {
+    // Do your stuff.
+    console.log(userstate.bits, "-------------");
+    //clientTwitch.say(process.env.USERNAME as string, `Ktoś dał donate ${userstate.bits}, więc daj znać dave, że twitch dobrze podaje cheersy`)
+    wws.emit("timer:cheer", userstate.bits);
+    window.webContents.send("timer:console", `someone cheered ${userstate.bits} bits`);
+});
 
-const {
-    app,
-    BrowserWindow,
-    ipcMain
-} = electron;
+const { app, BrowserWindow, ipcMain } = electron;
 
 // process.env.NODE_ENV = 'production'
 
@@ -239,12 +191,7 @@ let window: electron.BrowserWindow;
 const appPath = () => {
     switch (process.platform) {
         case "darwin": {
-            return path.join(
-                process.env.HOME,
-                "Library",
-                "Application Support",
-                "omega"
-            );
+            return path.join(process.env.HOME, "Library", "Application Support", "omega");
         }
         case "win32": {
             return process.env.APPDATA + "\\omega";
@@ -255,34 +202,28 @@ const appPath = () => {
     }
 };
 
-const writeSoundJson = (json ? : Array < sound > , callback ? : () => void) => {
-    fs.writeFileSync(
-        path.join(appPath(), "sounds.json"),
-        JSON.stringify(json ? json : [])
-    );
+const writeSoundJson = (json?: Array<sound>, callback?: () => void) => {
+    fs.writeFileSync(path.join(appPath(), "sounds.json"), JSON.stringify(json ? json : []));
     if (callback) callback();
 };
 
 const loadSounds = () =>
-    new Promise < Array < sound >> ((res, rej) => {
+    new Promise<Array<sound>>((res, rej) => {
         if (fs.existsSync(path.join(appPath(), "sounds.json"))) {
-            const file = fs.readFileSync(
-                path.join(appPath(), "sounds.json"),
-                "utf-8"
-            );
-            const json: Array < sound > = JSON.parse(file);
+            const file = fs.readFileSync(path.join(appPath(), "sounds.json"), "utf-8");
+            const json: Array<sound> = JSON.parse(file);
             console.log(json);
             res(json);
         } else {
             rej({
                 status: 404,
-                error: "no sounds found"
+                error: "no sounds found",
             });
         }
     });
-let loadedSounds: Array < sound > = [];
+let loadedSounds: Array<sound> = [];
 let isPlaying: boolean = false;
-const mapSounds = (action ? : string) => {
+const mapSounds = (action?: string) => {
     switch (action) {
         case "reload":
             globalShortcut.unregisterAll();
@@ -297,39 +238,27 @@ const mapSounds = (action ? : string) => {
                         globalShortcut.register(sound.keyBinding, () => {
                             console.log(sound.keyBinding);
                             if (isPlaying == false) {
-                                console.log(
-                                    `mpv ${sound.soundPath} --volume=${sound.volume}`
-                                );
-                                const cmd = exec(
-                                    `mpv ${sound.soundPath} --volume=${sound.volume}`
-                                );
-                                cmd.stdout.on("data", function (data: any) {
-                                    console.log(data.toString());
-                                });
-                                window.webContents.send(
-                                    "timer:console",
-                                    `started playing sound`
-                                );
-                                // what to do with data coming from the standard error
-                                cmd.stderr.on("data", function (data: any) {
-                                    console.log(data.toString());
-                                    // window.webContents.send(
-                                    //     "timer:console",
-                                    //     data.toString()
-                                    // );
-                                });
-                                // what to do when the command is done
-                                cmd.on("exit", function (code: any) {
-                                    console.log(
-                                        "program ended with code: " + code
-                                    );
-                                    window.webContents.send(
-                                        "timer:console",
-                                        `Ended playing sound ${code}`
-                                    );
-                                });
+                                console.log(`mpv ${sound.soundPath} --volume=${sound.volume}`);
+                                // const cmd = exec(`mpv ${sound.soundPath} --volume=${sound.volume}`);
+                                // cmd.stdout.on("data", function (data: any) {
+                                //     console.log(data.toString());
+                                // });
+                                // window.webContents.send("timer:console", `started playing sound`);
+                                // // what to do with data coming from the standard error
+                                // cmd.stderr.on("data", function (data: any) {
+                                //     console.log(data.toString());
+                                //     // window.webContents.send(
+                                //     //     "timer:console",
+                                //     //     data.toString()
+                                //     // );
+                                // });
+                                // // what to do when the command is done
+                                // cmd.on("exit", function (code: any) {
+                                //     console.log("program ended with code: " + code);
+                                //     window.webContents.send("timer:console", `Ended playing sound ${code}`);
+                                // });
+                                playSound(sound.soundPath);
                             }
-                            
                         });
                     })
                 )
@@ -337,13 +266,15 @@ const mapSounds = (action ? : string) => {
             break;
     }
 };
+const playSound = (link: string) => {
+    window.webContents.send("timer:console", `started playing sound: <b>${link}</b>`);
+    window.webContents.send("sound::playSound", link);
+};
 
 app.on("ready", () => {
     console.log(appPath());
     //registering shourtcuts even when app is not focused
-    globalShortcut.register("Control + Alt + v", () =>
-        console.log("ztrl+alt+v")
-    );
+    globalShortcut.register("Control + Alt + v", () => console.log("ztrl+alt+v"));
     window = new BrowserWindow({
         width: 800,
         height: 550,
@@ -363,18 +294,12 @@ app.on("ready", () => {
             fs.mkdir(path.join(appPath(), "thumbnails"), (err) => {
                 if (err) throw err;
                 console.log("created thumbnails folder");
-                window.webContents.send(
-                    "timer:console",
-                    `created ${path.join(appPath(), "thumbnails")}`
-                );
+                window.webContents.send("timer:console", `created ${path.join(appPath(), "thumbnails")}`);
             });
             fs.mkdir(path.join(appPath(), "sounds"), (err) => {
                 if (err) throw err;
                 console.log("created sounds folder");
-                window.webContents.send(
-                    "timer:console",
-                    `created ${path.join(appPath(), "sounds.json")}`
-                );
+                window.webContents.send("timer:console", `created ${path.join(appPath(), "sounds.json")}`);
             });
         });
         writeSoundJson();
@@ -404,7 +329,7 @@ ipcMain.on("app:updateConfig", (e, token, username) => {
     console.log(token, username);
     clientTwitch = new tmi.Client({
         options: {
-            debug: true
+            debug: true,
         },
         connection: {
             secure: true,
@@ -419,26 +344,36 @@ ipcMain.on("app:updateConfig", (e, token, username) => {
     clientTwitch
         .connect()
         .then(() => {
-            clientTwitch.say(
-                process.env.USERNAME as string,
-                "pomyślnie połączono z czatem"
-            );
-            window.webContents.send(
-                "timer:console",
-                `pomyślnie połączono z czatem`
-            );
+            clientTwitch.say(process.env.USERNAME as string, "pomyślnie połączono z czatem");
+            window.webContents.send("timer:console", `pomyślnie połączono z czatem`);
         })
         .catch((err) => {
             console.log(err);
             window.webContents.send("timer:console", `${err}`);
         });
 });
+ipcMain.on("donate::donate", (e, donateData) => {
+    console.log(`got donate data: `, donateData);
+    wws.emit("donate::donate", donateData);
+
+    const url = googleTTS.getAudioUrl(donateData.message, {
+        lang: "pl",
+        slow: false,
+        host: "https://translate.google.com",
+    });
+    // const url = "/home/dave/.omega/sounds/Among-Us-Role-Reveal---Sound-Effect-HD-ekL881PJMjI.mp3";
+    playSound(url);
+    console.log("\n\n", url);
+});
+ipcMain.on("test", (e, message) => {
+    console.log(`BIG TEST: `, message);
+});
 
 WebServer.listen("3200", () => {
-    console.log('timer is being listen on port 3200')
+    console.log("timer is being listen on port 3200");
 });
 robloxWWW.listen("6969", () => {
-    console.log('roblox donations is being listen on port 6969')
+    console.log("roblox donations is being listen on port 6969");
 });
 
 http.listen(8080, () => console.log("http working on 8080"));
