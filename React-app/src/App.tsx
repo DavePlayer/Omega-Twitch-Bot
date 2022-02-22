@@ -23,9 +23,7 @@ export interface consoleContext {
 export const App: React.FC = () => {
     const [content, setContent] = useState<string>("Debugging program:");
     const [listens, setListens] = useState<boolean>(false);
-    const [link, setLink] = useState<string>(
-        "https://translate.google.com/translate_tts?q=wikawikax%20wrzuci%C5%82a%2050%20bobux.%20%C5%9Bmierdzisz&tl=pl&total=1&idx=0&textlen=39&client=tw-ob&prev=input&ttsspeed=1"
-    );
+    const [link, setLink] = useState<string>("");
     const IPC = ipcRenderer;
     const [shouldDisplayPlayer, setShouldDisplayPlayer] = useState<boolean>(true);
     useEffect(() => {

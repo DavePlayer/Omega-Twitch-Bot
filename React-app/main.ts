@@ -12,6 +12,7 @@ import { sound } from "./src/Components/Shortcuts";
 import { Stream } from "stream";
 import * as googleTTS from "google-tts-api";
 import { Donate } from "./src/Components/Donate/Donate";
+import mp3Duration from "mp3-duration";
 dotenv.config();
 let exec = require("child_process").exec;
 //require("electron-reload")(process.cwd());
@@ -361,9 +362,20 @@ ipcMain.on("donate::donate", (e, donateData) => {
         slow: false,
         host: "https://translate.google.com",
     });
+    const donationWarning = "/home/dave/.omega/sounds/Chaturbate - Tip Sound - Tiny [pQoarCfAi40].mp3";
     // const url = "/home/dave/.omega/sounds/Among-Us-Role-Reveal---Sound-Effect-HD-ekL881PJMjI.mp3";
-    playSound(url);
-    console.log("\n\n", url);
+    mp3Duration(donationWarning, (err: any, duration: any) => {
+        if (err) {
+            console.log("error while reading donation warning");
+            return window.webContents.send("timer:console", `error accoured while reading doantion warning sound`);
+        }
+        console.log("duration: ", duration);
+        playSound(donationWarning);
+        setTimeout(() => {
+            playSound(url);
+        }, duration * 1000 + 100);
+        console.log("\n\n", url);
+    });
 });
 ipcMain.on("test", (e, message) => {
     console.log(`BIG TEST: `, message);

@@ -7,7 +7,7 @@ export const Donate: React.FC<{ ipcRenderer: () => IpcRenderer }> = ({ ipcRender
             donateImageUrl: "https://tr.rbxcdn.com/916ea72acafc1a091cf4239279e29a29/150/150/AvatarHeadshot/Png",
             userName: "mihalx",
             robuxAmmount: 500,
-            message: "twoja mama v.1",
+            message: "jesteś sus",
         };
         console.log("lul");
         ipcRenderer().send("donate::donate", fakeDonateData);
