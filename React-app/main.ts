@@ -6,12 +6,12 @@ import cors from "cors";
 import tmi from "tmi.js";
 import dotenv from "dotenv";
 import fs from "fs";
-import { existsSync, readSync } from "original-fs";
+import { existsSync } from "original-fs";
 import upload from "express-fileupload";
 import { sound } from "./src/Components/Shortcuts";
 import { Stream } from "stream";
 import * as googleTTS from "google-tts-api";
-import { Donate } from "./src/Components/Donate/Donate";
+import fetch from "node-fetch";
 import mp3Duration from "mp3-duration";
 dotenv.config();
 let exec = require("child_process").exec;
@@ -353,29 +353,66 @@ ipcMain.on("app:updateConfig", (e, token, username) => {
             window.webContents.send("timer:console", `${err}`);
         });
 });
-ipcMain.on("donate::donate", (e, donateData) => {
+ipcMain.on("donate::donate", async (e, donateData) => {
     console.log(`got donate data: `, donateData);
-    wws.emit("donate::donate", donateData);
 
     const url = googleTTS.getAudioUrl(donateData.message, {
         lang: "pl",
         slow: false,
         host: "https://translate.google.com",
     });
-    const donationWarning = "/home/dave/.omega/sounds/Chaturbate - Tip Sound - Tiny [pQoarCfAi40].mp3";
-    // const url = "/home/dave/.omega/sounds/Among-Us-Role-Reveal---Sound-Effect-HD-ekL881PJMjI.mp3";
-    mp3Duration(donationWarning, (err: any, duration: any) => {
-        if (err) {
-            console.log("error while reading donation warning");
-            return window.webContents.send("timer:console", `error accoured while reading doantion warning sound`);
-        }
-        console.log("duration: ", duration);
-        playSound(donationWarning);
+    const donationWarningPath = "/home/dave/.omega/sounds/Chaturbate - Tip Sound - Tiny [pQoarCfAi40].mp3";
+    const downloadFile = async (url: string, path: string) => {
+        const res = await fetch(url);
+        const fileStream = fs.createWriteStream(path);
+        await new Promise((resolve, reject) => {
+            res.body.pipe(fileStream);
+            res.body.on("error", reject);
+            fileStream.on("finish", resolve);
+        });
+    };
+
+    // fetch(url)
+    //     .then((file) => file.buffer)
+    //     .then((file: any) => {
+    //         console.log(path.join(appPath(), "ivona.mp3"));
+    //         fs.writeFile(path.join(appPath(), "ivona.mp3"), Buffer.from(file), (err) => {
+    //             if (err) console.log(`\n\n-------`, err);
+    //             // mp3Duration(path.join(appPath(), "ivona.mp3"), (err: any, duration: any) => {
+    //             //     if (err) console.log(`err: `, err);
+    //             //     else console.log(`duration: `, duration);
+    //             // });
+    //         });
+    //     });
+    try {
+        const ivonaFile = await downloadFile(url, path.join(appPath(), "ivona.mp3"));
+        const ivonaDuration = await mp3Duration(path.join(appPath(), "ivona.mp3"));
+        const donationWarningDuration = await mp3Duration(donationWarningPath);
+
+        console.log(`ivona duration: `, ivonaDuration);
+        console.log(`duration: `, donationWarningDuration);
+        playSound(donationWarningPath);
+
         setTimeout(() => {
             playSound(url);
-        }, duration * 1000 + 100);
-        console.log("\n\n", url);
-    });
+        }, donationWarningDuration * 1000 + 100);
+        wws.emit("donate::donate", donateData);
+    } catch (err) {
+        console.log(err);
+    }
+
+    // mp3Duration(donationWarning, (err: any, duration: any) => {
+    //     if (err) {
+    //         console.log("error while reading donation warning");
+    //         return window.webContents.send("timer:console", `error accoured while reading doantion warning sound`);
+    //     }
+    //     console.log("duration: ", duration);
+    //     playSound(donationWarning);
+    //     setTimeout(() => {
+    //         playSound(url);
+    //     }, duration * 1000 + 100);
+    //     console.log("\n\n", url);
+    // });
 });
 ipcMain.on("test", (e, message) => {
     console.log(`BIG TEST: `, message);
