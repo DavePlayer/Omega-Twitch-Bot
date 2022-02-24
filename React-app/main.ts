@@ -1,112 +1,21 @@
 import electron, { globalShortcut, session } from "electron";
 import path from "path";
-import express from "express";
 import SocketIO from "socket.io";
-import cors from "cors";
 import tmi from "tmi.js";
 import dotenv from "dotenv";
 import fs from "fs";
 import { existsSync } from "original-fs";
-import upload from "express-fileupload";
-import { sound } from "./src/Components/Shortcuts";
-import { Stream } from "stream";
 import * as googleTTS from "google-tts-api";
 import fetch from "node-fetch";
 import mp3Duration from "mp3-duration";
+
+import { playSound, mapSounds, writeSoundJson } from "./srcElectron/routes/sounds";
+import { WebServer } from "./srcElectron/www";
+import { robloxWWW } from "./srcElectron/roblox";
+
 dotenv.config();
 let exec = require("child_process").exec;
 //require("electron-reload")(process.cwd());
-
-const WebServer: express.Application = express();
-const robloxWWW: express.Application = express();
-WebServer.use(cors());
-WebServer.use(express.json());
-WebServer.use(upload());
-
-robloxWWW.set("view engine", "ejs");
-robloxWWW.set("views", "roblox-templates");
-
-robloxWWW.get("/", (req: express.Request, res: express.Response) => {
-    res.sendFile(path.resolve(`${__dirname}/../roblox-templates/default.html`));
-});
-
-WebServer.get("/", (req: express.Request, res: express.Response) => {
-    res.sendFile(path.resolve(`${__dirname}/obs_html/index.html`));
-});
-
-WebServer.get("/sounds", (req: express.Request, res: express.Response) => {
-    console.log("some send request for sounds json");
-    loadSounds()
-        .then((sounds) => res.json(sounds))
-        .catch((err) => res.status(err.status).json(err.error));
-});
-
-WebServer.get("/getImage", (req: express.Request, res: express.Response) => {
-    console.log(req.query);
-    //res.sendFile(req.query.path as string);
-    const r = fs.createReadStream(req.query.path as string); // or any other way to get a readable stream
-    const ps = new Stream.PassThrough(); // <---- this makes a trick with stream error handling
-    Stream.pipeline(
-        r,
-        ps, // <---- this makes a trick with stream error handling
-        (err) => {
-            if (err) {
-                console.log(err); // No such file or any other kind of error
-                return res.sendStatus(400);
-            }
-        }
-    );
-    ps.pipe(res); // <---- this makes a trick with stream error handling
-});
-
-WebServer.post("/sounds", (req: express.Request, res: express.Response) => {
-    console.log("uploading new sound");
-    console.log("body: ", req.body);
-    console.log(`files: `, req.files);
-    // These files don't have proper types, so i had to do that
-    const thumbnailFile: any = req.files.thumbnail;
-    const soundFile: any = req.files.sound;
-    thumbnailFile.name = String(thumbnailFile.name)
-        .replace(/[^a-zA-Z0-9-. ]/g, "")
-        .replace(/\s+/g, "-");
-    soundFile.name = String(soundFile.name)
-        .replace(/[^a-zA-Z0-9-. ]/g, "")
-        .replace(/\s+/g, "-");
-
-    fs.writeFile(path.join(appPath(), "thumbnails", thumbnailFile.name), thumbnailFile.data, (err) => {
-        if (err) throw err;
-        else {
-            window.webContents.send("timer:console", `created ${thumbnailFile.name} file`);
-        }
-    });
-    fs.writeFile(path.join(appPath(), "sounds", soundFile.name), soundFile.data, (err) => {
-        if (err) throw err;
-        else {
-            window.webContents.send("timer:console", `created ${soundFile.name} file`);
-        }
-    });
-    const file = fs.readFileSync(path.join(appPath(), "sounds.json"), "utf-8");
-    let json: Array<sound> = JSON.parse(file);
-    json = [
-        ...json,
-        {
-            name: req.body.name,
-            keyBinding: req.body.shortcut,
-            soundPath: path.join(appPath(), "sounds", soundFile.name.replace(/\s+/g, "-").replace(/\s+/g, "-")),
-            thumbnailPath: path.join(
-                appPath(),
-                "thumbnails",
-                thumbnailFile.name.replace(/\s+/g, "-").replace(/\s+/g, "-")
-            ),
-            volume: 100,
-            duration: soundFile.data.duration,
-        },
-    ];
-    writeSoundJson(json, () => mapSounds("reload"));
-    res.json({
-        status: "OK",
-    });
-});
 
 const http = require("http").createServer();
 const wws: SocketIO.Server = require("socket.io")(http, {
@@ -187,9 +96,9 @@ const { app, BrowserWindow, ipcMain } = electron;
 
 // process.env.NODE_ENV = 'production'
 
-let window: electron.BrowserWindow;
+export let window: electron.BrowserWindow;
 
-const appPath = () => {
+export const appPath = () => {
     switch (process.platform) {
         case "darwin": {
             return path.join(process.env.HOME, "Library", "Application Support", "omega");
@@ -201,75 +110,6 @@ const appPath = () => {
             return process.env.HOME + "/.omega";
         }
     }
-};
-
-const writeSoundJson = (json?: Array<sound>, callback?: () => void) => {
-    fs.writeFileSync(path.join(appPath(), "sounds.json"), JSON.stringify(json ? json : []));
-    if (callback) callback();
-};
-
-const loadSounds = () =>
-    new Promise<Array<sound>>((res, rej) => {
-        if (fs.existsSync(path.join(appPath(), "sounds.json"))) {
-            const file = fs.readFileSync(path.join(appPath(), "sounds.json"), "utf-8");
-            const json: Array<sound> = JSON.parse(file);
-            console.log(json);
-            res(json);
-        } else {
-            rej({
-                status: 404,
-                error: "no sounds found",
-            });
-        }
-    });
-let loadedSounds: Array<sound> = [];
-let isPlaying: boolean = false;
-const mapSounds = (action?: string) => {
-    switch (action) {
-        case "reload":
-            globalShortcut.unregisterAll();
-            mapSounds("load");
-            break;
-        case "load":
-        default:
-            loadSounds()
-                .then((sounds) => (loadedSounds = sounds))
-                .then(() =>
-                    loadedSounds.map((sound: sound) => {
-                        globalShortcut.register(sound.keyBinding, () => {
-                            console.log(sound.keyBinding);
-                            if (isPlaying == false) {
-                                console.log(`mpv ${sound.soundPath} --volume=${sound.volume}`);
-                                // const cmd = exec(`mpv ${sound.soundPath} --volume=${sound.volume}`);
-                                // cmd.stdout.on("data", function (data: any) {
-                                //     console.log(data.toString());
-                                // });
-                                // window.webContents.send("timer:console", `started playing sound`);
-                                // // what to do with data coming from the standard error
-                                // cmd.stderr.on("data", function (data: any) {
-                                //     console.log(data.toString());
-                                //     // window.webContents.send(
-                                //     //     "timer:console",
-                                //     //     data.toString()
-                                //     // );
-                                // });
-                                // // what to do when the command is done
-                                // cmd.on("exit", function (code: any) {
-                                //     console.log("program ended with code: " + code);
-                                //     window.webContents.send("timer:console", `Ended playing sound ${code}`);
-                                // });
-                                playSound(sound.soundPath);
-                            }
-                        });
-                    })
-                )
-                .catch((err) => console.log(err));
-            break;
-    }
-};
-const playSound = (link: string) => {
-    window.webContents.send("timer:console", `started playing sound: <b>${link}</b>`);
-    window.webContents.send("sound::playSound", link);
 };
 
 app.on("ready", () => {
