@@ -5,12 +5,14 @@ import path from "path";
 import { Stream } from "stream";
 import fs from "fs";
 import { soundsRouter } from "./routes/sounds";
+import { robloxRouter } from "./routes/roblox";
 
 export const WebServer: express.Application = express();
 WebServer.use(cors());
 WebServer.use(express.json());
 WebServer.use(upload());
 WebServer.use(soundsRouter);
+WebServer.use(robloxRouter);
 
 WebServer.get("/", (req: express.Request, res: express.Response) => {
     res.sendFile(path.resolve(`${__dirname}/../obs_html/index.html`));

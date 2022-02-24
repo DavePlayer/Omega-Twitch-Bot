@@ -1,6 +1,5 @@
 import electron, { globalShortcut, session } from "electron";
 import path from "path";
-import SocketIO from "socket.io";
 import dotenv from "dotenv";
 import fs from "fs";
 import { existsSync } from "original-fs";
@@ -8,40 +7,24 @@ import { existsSync } from "original-fs";
 // www servers and sounds functions
 import { mapSounds, writeSoundJson } from "./srcElectron/routes/sounds";
 import { WebServer } from "./srcElectron/www";
-import { robloxWWW } from "./srcElectron/roblox";
-
-const http = require("http").createServer();
-const wws: SocketIO.Server = require("socket.io")(http, {
-    cors: {
-        origin: "*",
-    },
+const port = "6969";
+WebServer.listen(port, () => {
+    console.log(`timer is being listen on port ${port}`);
 });
-//const wws = new WebSocket.Server({server: require('http').createServer(WebServer)})
 
-wws.on("connection", (socket: SocketIO.Socket) => {
-    console.log("new client connected");
-    socket.send("connection confirmed");
-
-    socket.on("timer:update", () => {
-        console.log("updated clock");
-    });
-    socket.on("timer:console", (message) => {
-        console.log(message);
-    });
-    socket.on("timer:cheer", (cheer) => {
-        console.log("cheer granted", cheer);
-    });
-});
+// wws socket
+import { wws, mapWWS } from "./srcElectron/webSockets/wws";
+mapWWS(wws);
 
 // twtich
 import { client, mapTwitchClient } from "./srcElectron/twitch";
 let clientTwitch = client;
 mapTwitchClient(clientTwitch, wws);
 
+// env config
 dotenv.config();
 
 const { app, BrowserWindow } = electron;
-
 // process.env.NODE_ENV = 'production'
 
 export const appPath = () => {
@@ -102,12 +85,3 @@ app.on("ready", () => {
 // IpcMain
 import { ipcMain, mapIpc } from "./srcElectron/webSockets/ipcMain";
 mapIpc(ipcMain, wws, clientTwitch, app);
-
-WebServer.listen("3200", () => {
-    console.log("timer is being listen on port 3200");
-});
-robloxWWW.listen("6969", () => {
-    console.log("roblox donations is being listen on port 6969");
-});
-
-http.listen(8080, () => console.log("http working on 8080"));
