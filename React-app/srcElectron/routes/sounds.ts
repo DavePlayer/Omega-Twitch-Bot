@@ -27,6 +27,8 @@ export const loadSounds = () =>
     });
 let loadedSounds: Array<sound> = [];
 let isPlaying: boolean = false;
+let exec = require("child_process").exec;
+
 export const mapSounds = (action?: string) => {
     switch (action) {
         case "reload":

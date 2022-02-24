@@ -1,21 +1,18 @@
 import electron, { globalShortcut, session } from "electron";
 import path from "path";
 import SocketIO from "socket.io";
-import tmi from "tmi.js";
 import dotenv from "dotenv";
 import fs from "fs";
 import { existsSync } from "original-fs";
 import * as googleTTS from "google-tts-api";
 import fetch from "node-fetch";
 import mp3Duration from "mp3-duration";
+import tmi from "tmi.js";
 
+// www servers and sounds functions
 import { playSound, mapSounds, writeSoundJson } from "./srcElectron/routes/sounds";
 import { WebServer } from "./srcElectron/www";
 import { robloxWWW } from "./srcElectron/roblox";
-
-dotenv.config();
-let exec = require("child_process").exec;
-//require("electron-reload")(process.cwd());
 
 const http = require("http").createServer();
 const wws: SocketIO.Server = require("socket.io")(http, {
@@ -40,63 +37,16 @@ wws.on("connection", (socket: SocketIO.Socket) => {
     });
 });
 
-let clientTwitch: tmi.Client = new tmi.Client({
-    options: {
-        debug: true,
-    },
-    connection: {
-        secure: true,
-        reconnect: true,
-        //server: 'irc.fdgt.dev',
-    },
-    identity: {
-        username: process.env.USERNAME,
-        password: process.env.TWITCH_KEY,
-    },
-    channels: [process.env.USERNAME as string],
-});
+// twtich
+import { client, mapTwitchClient } from "./srcElectron/twitch";
+let clientTwitch = client;
+mapTwitchClient(clientTwitch, wws);
 
-clientTwitch
-    .connect()
-    .then(() => {
-        console.log("connected");
-        window.webContents.send("timer:console", `pomyślnie połączono z czatem`);
-        //setTimeout(() => {
-        //    clientTwitch.say(process.env.USERNAME as string, 'bits --bitscount 500 Woohoo!')
-        //}, 10000)
-    })
-    .catch((err) => {
-        console.log(err);
-        window.webContents.send("timer:console", `${err}`);
-    });
-
-// testing by chat because can't test cheers
-/*clientTwitch.on("message", (channel:any, userstate:any, message:any, self:any) => {
-    const bits = parseInt(message)
-
-    if(isNaN(bits) != true) {
-        wws.emit('timer:cheer', bits)
-    }
-})*/
-clientTwitch.on("connected", () => {
-    console.log("connected properly");
-    clientTwitch.say(process.env.USERNAME as string, "pomyślnie połączono z czatem");
-    //window.webContents.send('timer:console', `pomyślnie połączono z czatem`)
-});
-
-clientTwitch.on("cheer", (channel: any, userstate: tmi.Userstate, message: any) => {
-    // Do your stuff.
-    console.log(userstate.bits, "-------------");
-    //clientTwitch.say(process.env.USERNAME as string, `Ktoś dał donate ${userstate.bits}, więc daj znać dave, że twitch dobrze podaje cheersy`)
-    wws.emit("timer:cheer", userstate.bits);
-    window.webContents.send("timer:console", `someone cheered ${userstate.bits} bits`);
-});
+dotenv.config();
 
 const { app, BrowserWindow, ipcMain } = electron;
 
 // process.env.NODE_ENV = 'production'
-
-export let window: electron.BrowserWindow;
 
 export const appPath = () => {
     switch (process.platform) {
@@ -111,6 +61,8 @@ export const appPath = () => {
         }
     }
 };
+
+export let window: electron.BrowserWindow;
 
 app.on("ready", () => {
     console.log(appPath());
