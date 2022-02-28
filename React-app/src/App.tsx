@@ -38,7 +38,7 @@ export const App: React.FC = () => {
             IPC.removeAllListeners("sound::playSound");
         };
     }, []);
-    const log = (value: string) => setContent((prev) => prev + `\n:-- ${value}`);
+    const log = (value: string) => setContent((prev) => prev + `\n\n:-- ${value}`);
     return (
         <Router>
             <consoleContext.Provider value={{ content, setContent, log, listens, setListens }}>

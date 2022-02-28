@@ -25,6 +25,8 @@
             .container {
                 width: 50%;
                 padding: 1em;
+                opacity: 0;
+                transition: opacity 2s;
             }
 
             figure {
@@ -86,6 +88,11 @@
                     usernameBox.style.color = settings.userNickColor;
                     robuxAmmountBox.style.color = settings.robuxAmmountColor;
                     messageBox.style.color = settings.messageColor;
+
+                    document.querySelector(`.container`).style.opacity = 1;
+                    setTimeout(() => {
+                        document.querySelector(`.container`).style.opacity = 0;
+                    }, 3000);
                 };
                 class Donation {
                     constructor(imageUrl, username, robuxAmmount, message) {

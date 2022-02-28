@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { IpcRenderer } from "electron";
 
 export const Donate: React.FC<{ ipcRenderer: () => IpcRenderer }> = ({ ipcRenderer }) => {
+    const [count, setCount] = useState<number>(1);
     const fakeDonate = () => {
+        setCount((prev) => prev + 1);
         let fakeDonateData = {
             donateImageUrl: "https://tr.rbxcdn.com/916ea72acafc1a091cf4239279e29a29/150/150/AvatarHeadshot/Png",
             userName: "mihalx",
             robuxAmmount: 500,
-            message: "twoja mama",
+            message: `twoja mama ${count}`,
+            lang: `pl`,
         };
         console.log("lul");
         ipcRenderer().send("donate::donate", fakeDonateData);
