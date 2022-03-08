@@ -24,6 +24,17 @@ mapTwitchClient(clientTwitch, wws);
 // env config
 dotenv.config();
 
+// roblox api
+import { initRobloxSockets, getToken } from './srcElectron/webSockets/RobloxSocketClient'
+import keytar from 'keytar'
+console.log('\n\n\nroblox api')
+const secret = keytar.getPassword('credentials', 'auth')
+secret.then(async res => {
+    if (res == null) return console.log('no credentials saved')
+    const [login, password] = res.split(' ') || []
+    const token = await getToken(login, password)
+}).catch(err => console.log(err))
+
 const { app, BrowserWindow } = electron;
 // process.env.NODE_ENV = 'production'
 
@@ -44,7 +55,6 @@ export const appPath = () => {
 export let window: electron.BrowserWindow;
 
 app.on("ready", () => {
-    console.log(appPath());
     //registering shourtcuts even when app is not focused
     globalShortcut.register("Control + Alt + v", () => console.log("ztrl+alt+v"));
     window = new BrowserWindow({
