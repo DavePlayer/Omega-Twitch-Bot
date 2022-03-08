@@ -89,9 +89,11 @@ nav ol a:hover li {
 main {
     margin-top: 1em;
     padding: 1em;
+    max-height: 700px;
+    overflow-y: scroll;
 }
 
-main section {
+main > section {
     width: 100%;
 }
 
@@ -139,8 +141,12 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
-.time {
+main form section input {
     margin-right: 1em;
+}
+main form h2 {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 svg {
@@ -182,9 +188,9 @@ button {
     cursor: pointer;
 }
 
-.short {
+main {
     overflow: scroll;
-    max-height: 28em;
+    max-height: calc(550px - 5em);
     overflow-x: hidden;
     &::-webkit-scrollbar {
         width: 0.5em;
@@ -309,18 +315,10 @@ button {
     justify-content: center;
     background: rgb(24, 24, 27);
     transition: 0.3s linear;
-    background: linear-gradient(
-        180deg,
-        rgba(24, 24, 27, 0) 0%,
-        rgba(0, 0, 0, 1) 45%
-    );
+    background: linear-gradient(180deg, rgba(24, 24, 27, 0) 0%, rgba(0, 0, 0, 1) 45%);
     &:hover {
         bottom: -10%;
-        background: linear-gradient(
-            180deg,
-            rgba(24, 24, 27, 0) 0%,
-            rgba(0, 0, 0, 1) 100%
-        );
+        background: linear-gradient(180deg, rgba(24, 24, 27, 0) 0%, rgba(0, 0, 0, 1) 100%);
     }
     &:hover textarea {
         bottom: 30%;

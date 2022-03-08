@@ -8,9 +8,7 @@ export const SoundSquare: React.FC<{ sound: sound }> = ({ sound }) => {
     return (
         <article className="sound">
             <figure>
-                <img
-                    src={`http://127.0.0.1:3200/getImage/?path=${sound.thumbnailPath}`}
-                />
+                <img src={`${process.env.ELECTRON_SERVER}/getImage/?path=${sound.thumbnailPath}`} />
             </figure>
             <h4>{sound.name}</h4>
             <p>{sound.keyBinding}</p>

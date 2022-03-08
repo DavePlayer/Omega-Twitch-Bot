@@ -15,7 +15,7 @@ export const Shortcuts: React.FC = () => {
     const [sounds, setSounds] = useState<Array<sound>>([]);
     const fetchData = async () => {
         try {
-            const data = await fetch("http://127.0.0.1:3200/sounds");
+            const data = await fetch(`${process.env.ELECTRON_SERVER}/sounds`);
             const json = await data.json();
             setSounds(json);
         } catch (err) {
@@ -36,17 +36,9 @@ export const Shortcuts: React.FC = () => {
             <h1>Soundboard</h1>
             <button onClick={() => handleAddSound()}>Add sound</button>
             <section className="sound-board">
-                {sounds.length > 0 &&
-                    sounds.map((sound, i) => (
-                        <SoundSquare key={i} sound={sound} />
-                    ))}
+                {sounds.length > 0 && sounds.map((sound, i) => <SoundSquare key={i} sound={sound} />)}
             </section>
-            {showWrapper && (
-                <AddSoundWrapper
-                    fetchData={() => fetchData}
-                    setShowWrapper={setShowWrapper}
-                />
-            )}
+            {showWrapper && <AddSoundWrapper fetchData={() => fetchData} setShowWrapper={setShowWrapper} />}
         </main>
     );
 };
