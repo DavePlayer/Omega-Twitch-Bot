@@ -3,10 +3,33 @@ import { IpcRenderer } from "electron";
 import { Form, Field, FieldRenderProps } from "react-final-form";
 import { Input } from "../TimerConfig";
 
+interface IFont {
+    path: string;
+    postscriptName: string;
+    family: string;
+    style: string;
+    weight: number;
+    width: number;
+    italic: boolean;
+    monospace: boolean;
+}
+
 export const Donate: React.FC<{ ipcRenderer: () => IpcRenderer }> = ({ ipcRenderer }) => {
     const [count, setCount] = useState<number>(1);
     const [displayConfig, setDisplayConfig] = useState<boolean>(false);
     const [loginData, setLoginData] = useState<{ login: string; password: string }>();
+    const [fonts, setFonts] = useState<Array<IFont>>([
+        {
+            path: "/Library/Fonts/Arial.ttf",
+            postscriptName: "ArialMT",
+            family: "Arial",
+            style: "Regular",
+            weight: 400,
+            width: 5,
+            italic: false,
+            monospace: false,
+        },
+    ]);
     const normalInput: React.ComponentType<FieldRenderProps<any>> = (props) => {
         return (
             <>
@@ -20,6 +43,27 @@ export const Donate: React.FC<{ ipcRenderer: () => IpcRenderer }> = ({ ipcRender
                         id={props.input.id}
                         placeholder={props.placeholder}
                     />
+                </section>
+            </>
+        );
+    };
+    const selectInput: React.ComponentType<FieldRenderProps<any>> = (props) => {
+        return (
+            <>
+                <section>
+                    <select name="" id="">
+                        {props.elements.map((element: IFont) => {
+                            return (
+                                <option
+                                    key={element.path}
+                                    style={{ fontFamily: element.path }}
+                                    value={element.postscriptName}
+                                >
+                                    {element.postscriptName}
+                                </option>
+                            );
+                        })}
+                    </select>
                 </section>
             </>
         );
@@ -106,15 +150,15 @@ export const Donate: React.FC<{ ipcRenderer: () => IpcRenderer }> = ({ ipcRender
                 render={({ handleSubmit }) => (
                     <form onSubmit={(e) => handleSubmit(e)} action="#" method="get" className="settings-form">
                         <>
-                            <h2>Ustawienia test</h2>
-                            <section>
+                            <h2>Colors settings</h2>
+                            <section className="settings-wrapper">
                                 <Field
                                     type="text"
                                     defaultValue=""
                                     placeholder="nickname color"
                                     id="nickname-color"
                                     name="nicknameColor"
-                                    component={Input}
+                                    component={normalInput}
                                     validate={validateInputColor}
                                 />
                                 <Field
@@ -123,8 +167,50 @@ export const Donate: React.FC<{ ipcRenderer: () => IpcRenderer }> = ({ ipcRender
                                     placeholder="donate ammount color"
                                     id="donate-amount-color"
                                     name="donateAmountColor"
-                                    component={Input}
+                                    component={normalInput}
                                     validate={validateInputColor}
+                                />
+                                <Field
+                                    type="text"
+                                    defaultValue=""
+                                    placeholder="message color"
+                                    id="message-color-input"
+                                    name="messageColor"
+                                    component={normalInput}
+                                    validate={validateInputColor}
+                                />
+                                <Field
+                                    type="text"
+                                    defaultValue=""
+                                    placeholder="text-color"
+                                    id="text-color-input"
+                                    name="textColor"
+                                    component={normalInput}
+                                    validate={validateInputColor}
+                                />
+                            </section>
+                            <button>Apply settings</button>
+                        </>
+                    </form>
+                )}
+                onSubmit={(e) => handleSubmit(e)}
+            />
+            <Form
+                name="fonts-settings"
+                render={({ handleSubmit }) => (
+                    <form onSubmit={(e) => handleSubmit(e)} action="#" method="get" className="settings-form">
+                        <>
+                            <h2>Fonts settings</h2>
+                            <section className="settings-wrapper">
+                                <Field
+                                    type="select"
+                                    defaultValue=""
+                                    placeholder="text-color"
+                                    id="text-color-input"
+                                    name="textColor"
+                                    component={selectInput}
+                                    validate={validateInputColor}
+                                    elements={fonts}
                                 />
                             </section>
                             <button>Apply settings</button>

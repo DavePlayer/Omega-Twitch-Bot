@@ -165,7 +165,7 @@ svg:hover {
 }
 
 .input-and-error {
-    width: 30%;
+    width: 50%;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -346,5 +346,26 @@ main {
         border-radius: 0.2em;
         background-color: #3a3a3d;
         outline: white;
+    }
+}
+
+.settings-wrapper {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    section {
+        width: 50%;
+        justify-content: center;
+        display: flex;
+        flex-wrap: wrap;
+        p {
+            width: 100%;
+            text-align: center;
+            padding: 0.2em;
+        }
+        input {
+            width: 60%;
+            margin-bottom: 2em;
+        }
     }
 }
