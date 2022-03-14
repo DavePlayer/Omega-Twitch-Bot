@@ -3,6 +3,7 @@ import SocketIO from "socket.io";
 import tmi from "tmi.js";
 import { window } from "../../main";
 import DonationSystem from "./../donationQuerry/donationQuery";
+import getSystemFonts from "get-system-fonts";
 
 export const { ipcMain } = electron;
 
@@ -54,6 +55,10 @@ export const mapIpc = (
                 window.webContents.send("timer:console", `${err}`);
             });
     });
+    ipcMain.on('fonts:getFonts', async () => {
+        getSystemFonts()
+            .then(fonts => window.webContents.send('fonts:sendFonts', fonts))
+    })
     ipcMain.on("donate::donate", async (e, donateData) => {
         // console.log(`got donate data: `, donateData);
         DonationSystem.manageDonation(wws, donateData);

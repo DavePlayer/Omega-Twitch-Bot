@@ -3,33 +3,12 @@ import { IpcRenderer } from "electron";
 import { Form, Field, FieldRenderProps } from "react-final-form";
 import { Input } from "../TimerConfig";
 
-interface IFont {
-    path: string;
-    postscriptName: string;
-    family: string;
-    style: string;
-    weight: number;
-    width: number;
-    italic: boolean;
-    monospace: boolean;
-}
-
-export const Donate: React.FC<{ ipcRenderer: () => IpcRenderer }> = ({ ipcRenderer }) => {
+export const Donate: React.FC<{ ipcRenderer: IpcRenderer }> = ({ ipcRenderer }) => {
     const [count, setCount] = useState<number>(1);
     const [displayConfig, setDisplayConfig] = useState<boolean>(false);
     const [loginData, setLoginData] = useState<{ login: string; password: string }>();
-    const [fonts, setFonts] = useState<Array<IFont>>([
-        {
-            path: "/Library/Fonts/Arial.ttf",
-            postscriptName: "ArialMT",
-            family: "Arial",
-            style: "Regular",
-            weight: 400,
-            width: 5,
-            italic: false,
-            monospace: false,
-        },
-    ]);
+    const [fonts, setFonts] = useState<Array<string>>(["Adobe Devanagari"]);
+    const [selectedFont, setSelectedFont] = useState("Adobe Devanagari");
     const normalInput: React.ComponentType<FieldRenderProps<any>> = (props) => {
         return (
             <>
@@ -47,24 +26,38 @@ export const Donate: React.FC<{ ipcRenderer: () => IpcRenderer }> = ({ ipcRender
             </>
         );
     };
+    const numberInput: React.ComponentType<FieldRenderProps<any>> = (props) => {
+        return (
+            <>
+                <input
+                    {...props.input}
+                    {...props.inputProps}
+                    type={props.input.type}
+                    className={props.className}
+                    id={props.input.id}
+                    placeholder={props.placeholder}
+                />
+            </>
+        );
+    };
     const selectInput: React.ComponentType<FieldRenderProps<any>> = (props) => {
         return (
             <>
-                <section>
-                    <select name="" id="">
-                        {props.elements.map((element: IFont) => {
-                            return (
-                                <option
-                                    key={element.path}
-                                    style={{ fontFamily: element.path }}
-                                    value={element.postscriptName}
-                                >
-                                    {element.postscriptName}
-                                </option>
-                            );
-                        })}
-                    </select>
-                </section>
+                <select
+                    style={{ fontFamily: selectedFont }}
+                    onChange={(e) => setSelectedFont(e.target.value)}
+                    value={selectedFont}
+                >
+                    {props.elements.map((font: string) => {
+                        const fontSplitPath = font.split("/");
+                        const fontName = fontSplitPath[fontSplitPath.length - 1].split(".").shift().replace("-", " ");
+                        return (
+                            <option key={font} style={{ fontFamily: fontName }} value={fontName}>
+                                {fontName}
+                            </option>
+                        );
+                    })}
+                </select>
             </>
         );
     };
@@ -78,10 +71,20 @@ export const Donate: React.FC<{ ipcRenderer: () => IpcRenderer }> = ({ ipcRender
             lang: `pl`,
         };
         console.log("lul");
-        ipcRenderer().send("donate::donate", fakeDonateData);
+        ipcRenderer.send("donate::donate", fakeDonateData);
     };
     useEffect(() => {
         // get login and password from electron
+        // getSystemFonts()
+        //     .then((fonts) => setFonts(fonts))
+        //     .catch((err) => console.log(err));
+        ipcRenderer.send("fonts:getFonts");
+        ipcRenderer.on("fonts:sendFonts", (e, fonts) => {
+            setFonts(fonts);
+        });
+        return () => {
+            ipcRenderer.removeAllListeners("fonts:sendFonts");
+        };
     }, []);
 
     const handleSubmit = (e: any) => {
@@ -202,16 +205,23 @@ export const Donate: React.FC<{ ipcRenderer: () => IpcRenderer }> = ({ ipcRender
                         <>
                             <h2>Fonts settings</h2>
                             <section className="settings-wrapper">
-                                <Field
-                                    type="select"
-                                    defaultValue=""
-                                    placeholder="text-color"
-                                    id="text-color-input"
-                                    name="textColor"
-                                    component={selectInput}
-                                    validate={validateInputColor}
-                                    elements={fonts}
-                                />
+                                <section>
+                                    <Field
+                                        type="select"
+                                        defaultValue=""
+                                        id="text-font-select"
+                                        name="fontSelected"
+                                        component={selectInput}
+                                        elements={fonts}
+                                    />
+                                    <Field
+                                        type="number"
+                                        defaultValue="1"
+                                        id="font-size"
+                                        name="fontSize"
+                                        component={numberInput}
+                                    />
+                                </section>
                             </section>
                             <button>Apply settings</button>
                         </>
@@ -219,30 +229,6 @@ export const Donate: React.FC<{ ipcRenderer: () => IpcRenderer }> = ({ ipcRender
                 )}
                 onSubmit={(e) => handleSubmit(e)}
             />
-            <form action="">
-                <h2>color settings</h2>
-                <section>
-                    <input type="text" placeholder="nickname color" />
-                    <input type="text" placeholder="Donate Amount Color" />
-                </section>
-                <button>Apply settings</button>
-            </form>
-            <form action="">
-                <h2>color settings</h2>
-                <section>
-                    <input type="text" placeholder="nickname color" />
-                    <input type="text" placeholder="Donate Amount Color" />
-                </section>
-                <button>Apply settings</button>
-            </form>
-            <form action="">
-                <h2>Fake data settings</h2>
-                <section>
-                    <input type="text" placeholder="Image URL" />
-                    <input type="text" placeholder="message color" />
-                </section>
-                <button>Apply settings</button>
-            </form>
             <button onClick={() => fakeDonate()}>Send Fake Donation</button>
         </main>
     );

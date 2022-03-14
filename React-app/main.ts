@@ -3,6 +3,7 @@ import path from "path";
 import dotenv from "dotenv";
 import fs from "fs";
 import { existsSync } from "original-fs";
+import getSystemFonts from "get-system-fonts";
 
 // www servers and sounds functions
 import { mapSounds, writeSoundJson } from "./srcElectron/routes/sounds";
@@ -90,6 +91,8 @@ app.on("ready", () => {
         window.webContents.send("timer:console", `omega already exist`);
         mapSounds();
     }
+    getSystemFonts()
+        .then(fonts => console.log(fonts))
 });
 
 // IpcMain

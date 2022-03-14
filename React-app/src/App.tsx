@@ -56,7 +56,7 @@ export const App: React.FC = () => {
                     )}
                 />
                 <Route path="/shortcuts" exact render={() => <Shortcuts />} />
-                <Route path="/donate" exact render={() => <Donate ipcRenderer={() => ipcRenderer} />} />
+                <Route path="/donate" exact render={() => <Donate ipcRenderer={ipcRenderer} />} />
                 <Console />
                 <AudioPlayer shouldDisplay={shouldDisplayPlayer} link={link} />
             </consoleContext.Provider>
