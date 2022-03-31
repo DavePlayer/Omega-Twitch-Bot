@@ -93,11 +93,11 @@ export const Donate: React.FC<{ ipcRenderer: IpcRenderer }> = ({ ipcRenderer }) 
     };
     const handleColors = (e: Record<string, any>) => {
         console.log("Colors: \n", e);
-        setDisplayConfig(false);
+        ipcRenderer.send("donate::appendSettings", e, "robloxColors");
     };
     const handleFonts = (e: Record<string, any>) => {
-        console.log("fonts: \n", e, selectedFont);
-        setDisplayConfig(false);
+        console.log("Fonts: \n", e, selectedFont);
+        ipcRenderer.send("donate::appendSettings", { fontSize: e.fontSize, fontFamily: selectedFont }, "robloxFont");
     };
     const validateInput = (value: string) => {
         if (!value || value.length == 0) {

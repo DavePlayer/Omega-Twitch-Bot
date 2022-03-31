@@ -21,16 +21,23 @@
                 height: 30px;
                 display: block;
             }
+            body {
+                max-width: 100%;
+            }
 
             .container {
-                width: 50%;
-                padding: 1em;
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                overflow: hidden;
+                /* padding: 1em; */
                 opacity: 0;
                 transition: opacity 2s;
             }
 
             figure {
-                width: 100%;
+                width: 50%;
                 display: block;
             }
 
@@ -42,6 +49,7 @@
             }
 
             .info {
+                width: 100%;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -63,7 +71,7 @@
             <div class="info">
                 <p>
                     <span class="username"></span> donated
-                    <span class="robuxAmmount"></span>
+                    <span class="robuxAmount"></span>
                 </p>
                 <span class="robuxImg"></span>
             </div>
@@ -75,23 +83,28 @@
                     console.log("upodating data: ", donation);
                     const donateImageBox = document.querySelector(`.donateImage`);
                     const usernameBox = document.querySelector(`.username`);
-                    const robuxAmmountBox = document.querySelector(`.robuxAmmount`);
+                    const robuxAmountBox = document.querySelector(`.robuxAmount`);
                     const messageBox = document.querySelector(`.message`);
                     const container = document.querySelector(`.container`);
+                    const robuxImg = document.querySelector(`.robuxImg`);
 
                     // update content
                     donateImageBox.src = donation.donateImageUrl;
                     usernameBox.innerText = donation.username;
-                    robuxAmmountBox.innerText = donation.robuxAmmount;
+                    robuxAmountBox.innerText = donation.robuxAmmount;
                     messageBox.innerText = donation.message;
 
                     // update colors
+                    console.log("FONT SIZE: ", settings.fontSize);
                     usernameBox.style.color = settings.userNickColor;
-                    robuxAmmountBox.style.color = settings.robuxAmmountColor;
+                    robuxAmountBox.style.color = settings.robuxAmountColor;
                     messageBox.style.color = settings.messageColor;
                     container.style.color = settings.textColor;
-                    container.style.fontSize = settings.fontSize;
-                    container.fontFamily = settings.fontFamily;
+                    container.style.fontSize = settings.fontSize + "px";
+                    container.style.fontFamily = settings.fontFamily;
+                    robuxImg.style.width = settings.fontSize + "px";
+                    robuxImg.style.height = settings.fontSize + "px";
+                    robuxImg.style.backgroundSize = settings.fontSize + "px";
 
                     document.querySelector(`.container`).style.opacity = 1;
                     setTimeout(() => {
@@ -152,9 +165,10 @@
                         }
                     });
                     socket.on("donate::appendSettings", (set) => {
+                        console.log("appending settings", set);
                         settings = {
                             userNickColor: set.nicknameColor,
-                            robuxAmmountColor: set.donateAmmountColor,
+                            robuxAmountColor: set.donateAmountColor,
                             messageColor: set.messageColor,
                             textColor: set.textColor,
                             fontSize: set.fontSize,

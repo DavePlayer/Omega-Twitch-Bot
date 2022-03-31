@@ -1,7 +1,7 @@
 
 interface RobloxSettings {
     nicknameColor: String,
-    donateAmmountColor: String,
+    donateAmountColor: String,
     messageColor: String,
     textColor: String,
     fontSize: number,
@@ -16,7 +16,7 @@ class Settings {
 
     overwriteRobloxColors(settings: RobloxSettings) {
         this.Roblox.nicknameColor = settings.nicknameColor;
-        this.Roblox.donateAmmountColor = settings.donateAmmountColor;
+        this.Roblox.donateAmountColor = settings.donateAmountColor;
         this.Roblox.messageColor = settings.messageColor;
         this.Roblox.textColor = settings.textColor;
     }
@@ -29,9 +29,9 @@ class Settings {
 
 const defaultRobloxSettings: RobloxSettings = {
     nicknameColor: "#750DA8",
-    donateAmmountColor: "#750DA8",
+    donateAmountColor: "#750DA8",
     messageColor: "#F00",
-    textColor: "#fff",
+    textColor: "#000",
     fontSize: 28,
     fontFamily: "Arial",
 }

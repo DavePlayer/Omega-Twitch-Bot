@@ -66,6 +66,7 @@ export const mapIpc = (
     });
     ipcMain.on("donate::appendSettings", async (e, settings, type) => {
         // console.log(`got donate data: `, donateData);
+        console.log(`donation settings appending: `, type, settings)
         switch (type) {
             case `robloxColors`:
                 GlobalSettings.overwriteRobloxColors(settings)
