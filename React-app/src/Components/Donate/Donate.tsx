@@ -87,8 +87,16 @@ export const Donate: React.FC<{ ipcRenderer: IpcRenderer }> = ({ ipcRenderer }) 
         };
     }, []);
 
-    const handleSubmit = (e: any) => {
-        console.log(e);
+    const handleAuth = (e: Record<string, any>) => {
+        console.log("auth: \n", e);
+        setDisplayConfig(false);
+    };
+    const handleColors = (e: Record<string, any>) => {
+        console.log("Colors: \n", e);
+        setDisplayConfig(false);
+    };
+    const handleFonts = (e: Record<string, any>) => {
+        console.log("fonts: \n", e, selectedFont);
         setDisplayConfig(false);
     };
     const validateInput = (value: string) => {
@@ -146,7 +154,7 @@ export const Donate: React.FC<{ ipcRenderer: IpcRenderer }> = ({ ipcRenderer }) 
                         )}
                     </form>
                 )}
-                onSubmit={(e) => handleSubmit(e)}
+                onSubmit={(e) => handleAuth(e)}
             />
             <Form
                 name="colorData"
@@ -192,11 +200,11 @@ export const Donate: React.FC<{ ipcRenderer: IpcRenderer }> = ({ ipcRenderer }) 
                                     validate={validateInputColor}
                                 />
                             </section>
-                            <button>Apply settings</button>
+                            <button>Append colors</button>
                         </>
                     </form>
                 )}
-                onSubmit={(e) => handleSubmit(e)}
+                onSubmit={(e) => handleColors(e)}
             />
             <Form
                 name="fonts-settings"
@@ -223,11 +231,11 @@ export const Donate: React.FC<{ ipcRenderer: IpcRenderer }> = ({ ipcRenderer }) 
                                     />
                                 </section>
                             </section>
-                            <button>Apply settings</button>
+                            <button>Append font</button>
                         </>
                     </form>
                 )}
-                onSubmit={(e) => handleSubmit(e)}
+                onSubmit={(e) => handleFonts(e)}
             />
             <button onClick={() => fakeDonate()}>Send Fake Donation</button>
         </main>

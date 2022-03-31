@@ -7,6 +7,10 @@ import * as googleTTS from "google-tts-api";
 import { playSound } from "./../routes/sounds";
 import SocketIO from "socket.io";
 
+interface ISettings {
+
+}
+
 interface IDonationData {
     donateImageUrl: string;
     userName: string;

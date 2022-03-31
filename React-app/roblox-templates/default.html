@@ -77,6 +77,7 @@
                     const usernameBox = document.querySelector(`.username`);
                     const robuxAmmountBox = document.querySelector(`.robuxAmmount`);
                     const messageBox = document.querySelector(`.message`);
+                    const container = document.querySelector(`.container`);
 
                     // update content
                     donateImageBox.src = donation.donateImageUrl;
@@ -88,6 +89,9 @@
                     usernameBox.style.color = settings.userNickColor;
                     robuxAmmountBox.style.color = settings.robuxAmmountColor;
                     messageBox.style.color = settings.messageColor;
+                    container.style.color = settings.textColor;
+                    container.style.fontSize = settings.fontSize;
+                    container.fontFamily = settings.fontFamily;
 
                     document.querySelector(`.container`).style.opacity = 1;
                     setTimeout(() => {
@@ -146,6 +150,16 @@
                             // settings.robuxAmmount = donateData.robuxAmmount;
                             // settings.message = donateData.message;
                         }
+                    });
+                    socket.on("donate::appendSettings", (set) => {
+                        settings = {
+                            userNickColor: set.nicknameColor,
+                            robuxAmmountColor: set.donateAmmountColor,
+                            messageColor: set.messageColor,
+                            textColor: set.textColor,
+                            fontSize: set.fontSize,
+                            fontFamily: set.fontFamily,
+                        };
                     });
                 }
             };

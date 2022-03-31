@@ -4,6 +4,7 @@ import tmi from "tmi.js";
 import { window } from "../../main";
 import DonationSystem from "./../donationQuerry/donationQuery";
 import getSystemFonts from "get-system-fonts";
+import GlobalSettings from './../globalSettings'
 
 export const { ipcMain } = electron;
 
@@ -62,6 +63,20 @@ export const mapIpc = (
     ipcMain.on("donate::donate", async (e, donateData) => {
         // console.log(`got donate data: `, donateData);
         DonationSystem.manageDonation(wws, donateData);
+    });
+    ipcMain.on("donate::appendSettings", async (e, settings, type) => {
+        // console.log(`got donate data: `, donateData);
+        switch (type) {
+            case `robloxColors`:
+                GlobalSettings.overwriteRobloxColors(settings)
+                break;
+            case `robloxFont`:
+                GlobalSettings.overwriteRobloxFont(settings)
+                break;
+            default:
+                break;
+        }
+        wws.emit("donate::appendSettings", GlobalSettings.Roblox);
     });
     ipcMain.on("test", (e, message) => {
         console.log(`BIG TEST: `, message);

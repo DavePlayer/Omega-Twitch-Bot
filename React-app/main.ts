@@ -28,10 +28,11 @@ dotenv.config();
 // roblox api
 import { initRobloxSockets, getToken } from './srcElectron/webSockets/RobloxSocketClient'
 import keytar from 'keytar'
+
 console.log('\n\n\nroblox api')
 const secret = keytar.getPassword('credentials', 'auth')
 secret.then(async res => {
-    if (res == null) return console.log('no credentials saved')
+    if (res == null) return console.log('no credentials saved for roblox auth')
     const [login, password] = res.split(' ') || []
     const token = await getToken(login, password)
 }).catch(err => console.log(err))
@@ -92,7 +93,7 @@ app.on("ready", () => {
         mapSounds();
     }
     getSystemFonts()
-        .then(fonts => console.log(fonts))
+        .catch(err => console.log(`couldn't get system fonts`))
 });
 
 // IpcMain
