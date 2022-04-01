@@ -5,6 +5,9 @@ import { window } from "../../main";
 import DonationSystem from "./../donationQuerry/donationQuery";
 import getSystemFonts from "get-system-fonts";
 import GlobalSettings from './../globalSettings'
+import keytar from 'keytar'
+import { getToken, initRobloxSockets } from "./RobloxSocketClient";
+import chalk from 'chalk';
 
 export const { ipcMain } = electron;
 
@@ -50,9 +53,10 @@ export const mapIpc = (
             .then(() => {
                 clientTwitch.say(process.env.USERNAME as string, "pomyślnie połączono z czatem");
                 window.webContents.send("timer:console", `pomyślnie połączono z czatem`);
+                console.log(chalk.bgHex("#6441A4")(`properly connected to twitch server`));
             })
             .catch((err) => {
-                console.log(err);
+                console.log(chalk.black.bgRed(`error when sending message on twitch chat: `, err))
                 window.webContents.send("timer:console", `${err}`);
             });
     });
@@ -79,6 +83,39 @@ export const mapIpc = (
         }
         wws.emit("donate::appendSettings", GlobalSettings.Roblox);
     });
+    ipcMain.on("donate::changeLoginData", async (e, loginData: { username: string, password: string }) => {
+        console.log(`changing login data`)
+        await keytar.findCredentials(`robloxCredentials`)
+            .then(accounts => {
+                accounts.map(account => {
+                    keytar.deletePassword(`robloxCredentials`, account.account)
+                        .then(() => {
+                            console.log(`removed account: `, account)
+                        })
+                        .catch(err => console.log(err))
+                })
+            })
+            .finally(() => {
+                keytar.setPassword('robloxCredentials', loginData.username, loginData.password)
+                    .then(() => {
+                        console.log(`properly saved user data: ${loginData.username} ${loginData.password}`)
+                        getToken(loginData.username, loginData.password)
+                            .then((token) => {
+                                initRobloxSockets(token, wws)
+                            })
+                            .catch(err => {
+                                if (err.message.includes('FetchError')) {
+                                    console.log(chalk.bgRed(err))
+                                    window.webContents.send("timer:console", err);
+                                } else {
+                                    console.log(chalk.yellow(err))
+                                    window.webContents.send("timer:console", err);
+                                }
+                            })
+                    })
+                    .catch(err => console.log(err))
+            })
+    })
     ipcMain.on("test", (e, message) => {
         console.log(`BIG TEST: `, message);
     });

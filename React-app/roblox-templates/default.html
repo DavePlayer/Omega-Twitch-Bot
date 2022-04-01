@@ -109,14 +109,15 @@
                     document.querySelector(`.container`).style.opacity = 1;
                     setTimeout(() => {
                         document.querySelector(`.container`).style.opacity = 0;
-                    }, 3000);
+                    }, donation.timeOut * 1000);
                 };
                 class Donation {
-                    constructor(imageUrl, username, robuxAmmount, message) {
+                    constructor(imageUrl, username, robuxAmmount, message, timeOut) {
                         this.donateImageUrl = imageUrl;
                         this.username = username;
                         this.robuxAmmount = robuxAmmount;
                         this.message = message;
+                        this.timeOut = timeOut;
                     }
                 }
                 let donationQuerry = [
@@ -155,7 +156,8 @@
                                     donateData.donateImageUrl,
                                     donateData.userName,
                                     donateData.robuxAmmount,
-                                    donateData.message
+                                    donateData.message,
+                                    donateData.timeOut
                                 ),
                             ];
                             // settings.donateImageUrl = donateData.donateImageUrl;

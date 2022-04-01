@@ -90,6 +90,7 @@ export const Donate: React.FC<{ ipcRenderer: IpcRenderer }> = ({ ipcRenderer }) 
     const handleAuth = (e: Record<string, any>) => {
         console.log("auth: \n", e);
         setDisplayConfig(false);
+        ipcRenderer.send("donate::changeLoginData", e);
     };
     const handleColors = (e: Record<string, any>) => {
         console.log("Colors: \n", e);

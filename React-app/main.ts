@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import { existsSync } from "original-fs";
 import getSystemFonts from "get-system-fonts";
+import chalk from 'chalk';
 
 // www servers and sounds functions
 import { mapSounds, writeSoundJson } from "./srcElectron/routes/sounds";
@@ -26,16 +27,27 @@ mapTwitchClient(clientTwitch, wws);
 dotenv.config();
 
 // roblox api
-import { initRobloxSockets, getToken } from './srcElectron/webSockets/RobloxSocketClient'
-import keytar from 'keytar'
+import { initRobloxSockets, getToken, getCredentials } from './srcElectron/webSockets/RobloxSocketClient'
+getCredentials()
+    .then(credentials => {
+        getToken(credentials.account, credentials.password)
+            .then((token) => {
+                initRobloxSockets(token, wws)
+            })
+            .catch(err => {
+                if (err.message.includes('FetchError')) {
+                    console.log(chalk.bgRed(err))
+                    window.webContents.send("timer:console", err);
+                } else {
+                    console.log(chalk.yellow(err))
+                    window.webContents.send("timer:console", err);
+                }
+            })
+    })
+    .catch(err => console.log(chalk.bgRed(err)))
+
 
 console.log('\n\n\nroblox api')
-const secret = keytar.getPassword('credentials', 'auth')
-secret.then(async res => {
-    if (res == null) return console.log('no credentials saved for roblox auth')
-    const [login, password] = res.split(' ') || []
-    const token = await getToken(login, password)
-}).catch(err => console.log(err))
 
 const { app, BrowserWindow } = electron;
 // process.env.NODE_ENV = 'production'
@@ -93,7 +105,7 @@ app.on("ready", () => {
         mapSounds();
     }
     getSystemFonts()
-        .catch(err => console.log(`couldn't get system fonts`))
+        .catch(err => console.log(chalk.bgRed(`couldn't get system fonts`)))
 });
 
 // IpcMain

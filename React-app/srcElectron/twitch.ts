@@ -1,10 +1,11 @@
 import tmi from "tmi.js";
 import { window } from "../main";
 import SocketIO from "socket.io";
+import chalk from 'chalk';
 
 export let client: tmi.Client = new tmi.Client({
     options: {
-        debug: true,
+        debug: false,
     },
     connection: {
         secure: true,
@@ -21,14 +22,14 @@ export let client: tmi.Client = new tmi.Client({
 client
     .connect()
     .then(() => {
-        console.log("connected");
+        console.log(chalk.bgHex("#6441A4")(`properly connected to twitch server`));
         window.webContents.send("timer:console", `pomyślnie połączono z czatem`);
         //setTimeout(() => {
         //    clientTwitch.say(process.env.USERNAME as string, 'bits --bitscount 500 Woohoo!')
         //}, 10000)
     })
     .catch((err) => {
-        console.log(err);
+        console.log(chalk.black.bgRed(err));
         window.webContents.send("timer:console", `${err}`);
     });
 
@@ -43,9 +44,10 @@ client
 
 export const mapTwitchClient = async (clientTwitch: tmi.Client, wws: SocketIO.Server) => {
     clientTwitch.on("connected", () => {
-        console.log("connected properly");
+        console.log(chalk.bgHex("#6441A4")(`properly connected to twitch server`));
         try {
-            clientTwitch.say(process.env.USERNAME as string, "pomyślnie połączono z czatem");
+            clientTwitch.say(process.env.USERNAME as string, "pomyślnie połączono z czatem")
+                .catch(err => console.log(chalk.black.bgRed(`error when sending message on twitch chat: `, err)))
         } catch (err) {
             window.webContents.send("timer:console", `cannot send data to chat: ${err}`);
         }

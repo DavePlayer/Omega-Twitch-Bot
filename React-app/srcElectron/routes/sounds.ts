@@ -16,7 +16,6 @@ export const loadSounds = () =>
         if (fs.existsSync(path.join(appPath(), "sounds.json"))) {
             const file = fs.readFileSync(path.join(appPath(), "sounds.json"), "utf-8");
             const json: Array<sound> = JSON.parse(file);
-            console.log(json);
             res(json);
         } else {
             rej({

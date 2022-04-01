@@ -17,6 +17,7 @@ interface IDonationData {
     robuxAmmount: number;
     message: string;
     lang: string;
+    timeOut?: number;
 }
 
 class Donations {
@@ -41,7 +42,7 @@ class Donations {
         if (DonationData) this.querry = [...this.querry, DonationData];
         if (this.isPlaying == false && this.querry.length > 0) {
             this.isPlaying = true;
-            const data = this.querry[0];
+            let data = this.querry[0];
             try {
                 const url = await googleTTS.getAudioUrl(data.message, {
                     lang: data.lang,
@@ -57,9 +58,9 @@ class Donations {
                 console.log(`duration: `, donationWarningDuration);
                 const donation = this.querry[0];
                 playSound(donationWarningPath);
-                console.log(`playing warning`);
-
+                data.timeOut = ivonaDuration;
                 wws.emit("donate::donate", data);
+                console.log(`playing warning`);
                 setTimeout(() => {
                     console.log(`playing ivona`);
                     playSound(url);
@@ -67,7 +68,7 @@ class Donations {
                     setTimeout(() => {
                         this.isPlaying = false;
                         this.manageDonation(wws);
-                    }, ivonaDuration + 5000);
+                    }, (ivonaDuration * 1000) + donationWarningDuration + 2000);
                 }, donationWarningDuration * 1000 + 100);
             } catch (err) {
                 console.log(err);

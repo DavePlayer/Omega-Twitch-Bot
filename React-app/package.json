@@ -45,7 +45,6 @@
         "install": "^0.13.0",
         "keytar": "^7.9.0",
         "mp3-duration": "^1.1.0",
-        "npm": "^8.5.4",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
         "react-final-form": "^6.5.3",
@@ -66,11 +65,14 @@
         "@types/node-fetch": "^2.5.12",
         "@types/react": "^17.0.14",
         "@types/react-dom": "^17.0.9",
+        "chalk": "^2.4.1",
         "electron": "^13.1.6",
         "electron-builder": "^22.11.7",
         "electron-packager": "^15.2.0",
         "electron-reload": "^1.5.0",
+        "i": "^0.3.7",
         "nodemon": "^2.0.15",
+        "npm": "^8.6.0",
         "ts-node": "^10.1.0",
         "typescript": "^4.3.5"
     }
