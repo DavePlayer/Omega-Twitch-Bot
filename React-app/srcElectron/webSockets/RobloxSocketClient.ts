@@ -29,7 +29,7 @@ export const getToken: (login: string, password: string) => Promise<{ token: str
             throw new Error(error)
         }
     }
-export const initRobloxSockets = async (token: { token: string }, wws: SocketIO.Server) => {
+export const initRobloxSockets = async (token: { token: string }, wws: SocketIO.Server, login: string) => {
     console.log(chalk.hex("#393b3d").bgHex("#dee1e3")(`\n connecting to ${process.env.ROBLOX_DONATION_SOCKET}`))
     const socket: SocketIO.Socket = await io(`${process.env.ROBLOX_DONATION_SOCKET}`, {
         transports: ['websocket'],
@@ -51,7 +51,8 @@ export const initRobloxSockets = async (token: { token: string }, wws: SocketIO.
     socket.on("donation::donation", async (donateData) => {
         console.log(chalk.hex("#393b3d").bgHex("#dee1e3")(`got donation data: `));
         console.log(donateData)
-        DonationSystem.manageDonation(wws, donateData);
+        if (donateData && donateData.toWhom && donateData.toWhom == login)
+            DonationSystem.manageDonation(wws, donateData);
     });
     return socket
 };

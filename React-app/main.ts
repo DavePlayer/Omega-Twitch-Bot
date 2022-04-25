@@ -32,7 +32,7 @@ getCredentials()
     .then(credentials => {
         getToken(credentials.account, credentials.password)
             .then((token) => {
-                initRobloxSockets(token, wws)
+                initRobloxSockets(token, wws, credentials.account)
             })
             .catch(err => {
                 if (err.message.includes('FetchError')) {

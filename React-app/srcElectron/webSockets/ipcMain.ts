@@ -101,7 +101,7 @@ export const mapIpc = (
                         console.log(`properly saved user data: ${loginData.username} ${loginData.password}`)
                         getToken(loginData.username, loginData.password)
                             .then((token) => {
-                                initRobloxSockets(token, wws)
+                                initRobloxSockets(token, wws, loginData.username)
                             })
                             .catch(err => {
                                 if (err.message.includes('FetchError')) {
